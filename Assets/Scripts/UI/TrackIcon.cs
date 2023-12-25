@@ -27,6 +27,18 @@ public class TrackIcon : MonoBehaviour {
         Update();
     }
 
+    public void UpdateColor(bool runnerFlag)
+    {
+        if (target != null && (playerTarget || target.CompareTag("Player")))
+        {
+            if (!playerTarget)
+                playerTarget = target.GetComponent<PlayerController>();
+            Color newColor = runnerFlag ? Color.white : playerTarget.AnimationController.GlowColor;
+            image.color = newColor;
+            mat.SetColor("OverlayColor", newColor);
+        }
+    }
+
     public void Update() {
         if (target == null) {
             Destroy(gameObject);

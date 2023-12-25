@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e5478bfbe63c3c46b392d3ca752690c, type: 3}
+  m_Name: MusicIceRun
+  m_EditorClassIdentifier: 
+  clip: {fileID: 8300000, guid: 9f523d47ac37f8d459c48fe3a8523265, type: 3}
+  fastClip: {fileID: 8300000, guid: 827ba4bbaf782ae44a267ac0b3349585, type: 3}
+  loopStartSample: 5.004
+  loopEndSample: 70.24

@@ -10449,12 +10449,20 @@ MonoBehaviour:
   knockbackTimer: 0
   pipeTimer: 0
   slowdownTimer: 0
+  scoreTimer: 0
   wallSlideLeft: 0
   wallSlideRight: 0
   pipeDirection: {x: 0, y: 0}
   stars: 0
   coins: 0
   lives: -1
+  initLives: -1
+  numOfLivePlayers: 1000
+  scores: 0
+  scoreRequirement: -1
+  isIceRunMode: 0
+  isEnabledFriendlyFire: 0
+  isRunner: 0
   storedPowerup: {fileID: 0}
   holding: {fileID: 0}
   holdingOld: {fileID: 0}
@@ -10469,6 +10477,7 @@ MonoBehaviour:
   alreadyGroundpounded: 0
   character: {fileID: 11400000, guid: 8e33573d2c2ae7c4682fc6cdb5ea28cd, type: 2}
   onIce: 0
+  isCancelPlayerCollision: 0
 --- !u!114 &79918617084146557
 MonoBehaviour:
   m_ObjectHideFlags: 0

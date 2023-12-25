@@ -30,9 +30,9 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
     public TMP_Dropdown levelDropdown, characterDropdown;
     public RoomIcon selectedRoomIcon, privateJoinRoom;
     public Button joinRoomBtn, createRoomBtn, startGameBtn;
-    public Toggle ndsResolutionToggle, fullscreenToggle, livesEnabled, powerupsEnabled, timeEnabled, drawTimeupToggle, fireballToggle, vsyncToggle, privateToggle, privateToggleRoom, aspectToggle, spectateToggle, scoreboardToggle, filterToggle;
+    public Toggle ndsResolutionToggle, fullscreenToggle, livesEnabled, powerupsEnabled, iceRunModeEnabled, scoreModeEnabled, friendlyFireEnabled, timeEnabled, drawTimeupToggle, fireballToggle, vsyncToggle, privateToggle, privateToggleRoom, aspectToggle, spectateToggle, scoreboardToggle, filterToggle;
     public GameObject playersContent, playersPrefab, chatContent, chatPrefab;
-    public TMP_InputField nicknameField, starsText, coinsText, livesField, timeField, lobbyJoinField, chatTextField;
+    public TMP_InputField nicknameField, starsText, coinsText, livesField, timeField, scoresField, lobbyJoinField, chatTextField;
     public Slider musicSlider, sfxSlider, masterSlider, lobbyPlayersSlider, changePlayersSlider;
     public GameObject mainMenuSelected, optionsSelected, lobbySelected, currentLobbySelected, createLobbySelected, creditsSelected, controlsSelected, privateSelected, reconnectSelected, updateBoxSelected;
     public GameObject errorBox, errorButton, rebindPrompt, reconnectBox;
@@ -213,7 +213,10 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         AttemptToUpdateProperty<int>(updatedProperties, Enums.NetRoomProperties.StarRequirement, ChangeStarRequirement);
         AttemptToUpdateProperty<int>(updatedProperties, Enums.NetRoomProperties.CoinRequirement, ChangeCoinRequirement);
         AttemptToUpdateProperty<int>(updatedProperties, Enums.NetRoomProperties.Lives, ChangeLives);
+        AttemptToUpdateProperty<int>(updatedProperties, Enums.NetRoomProperties.ScoreRequirement, ChangeScores);
         AttemptToUpdateProperty<bool>(updatedProperties, Enums.NetRoomProperties.NewPowerups, ChangeNewPowerups);
+        AttemptToUpdateProperty<bool>(updatedProperties, Enums.NetRoomProperties.IceRunMode, ChangeIceRunMode);
+        AttemptToUpdateProperty<bool>(updatedProperties, Enums.NetRoomProperties.FriendlyFire, ChangeFriendlyFire);
         AttemptToUpdateProperty<int>(updatedProperties, Enums.NetRoomProperties.Time, ChangeTime);
         AttemptToUpdateProperty<bool>(updatedProperties, Enums.NetRoomProperties.DrawTime, ChangeDrawTime);
         AttemptToUpdateProperty<string>(updatedProperties, Enums.NetRoomProperties.HostName, ChangeLobbyHeader);
@@ -796,6 +799,47 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         powerupsEnabled.SetIsOnWithoutNotify(value);
     }
 
+    public void ChangeIceRunMode(bool value)
+    {
+        iceRunModeEnabled.SetIsOnWithoutNotify(value);
+    }
+
+    public void ChangeFriendlyFire(bool value)
+    {
+        friendlyFireEnabled.SetIsOnWithoutNotify(value);
+    }
+
+    public void ChangeScores(int scores)
+    {
+        scoreModeEnabled.SetIsOnWithoutNotify(scores != -1);
+        UpdateSettingEnableStates();
+        if (scores == -1)
+            return;
+
+        scoresField.SetTextWithoutNotify(scores.ToString());
+    }
+    public void SetScores(TMP_InputField input)
+    {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        int.TryParse(input.text, out int newValue);
+        if (newValue == -1)
+            return;
+
+        if (newValue < 1)
+            newValue = 20;
+        ChangeScores(newValue);
+        if (newValue == (int)PhotonNetwork.CurrentRoom.CustomProperties[Enums.NetRoomProperties.ScoreRequirement])
+            return;
+
+        Hashtable table = new()
+        {
+            [Enums.NetRoomProperties.ScoreRequirement] = newValue
+        };
+        PhotonNetwork.CurrentRoom.SetCustomProperties(table);
+    }
+
     public void ChangeLives(int lives) {
         livesEnabled.SetIsOnWithoutNotify(lives != -1);
         UpdateSettingEnableStates();
@@ -823,15 +867,43 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         };
         PhotonNetwork.CurrentRoom.SetCustomProperties(table);
     }
-    public void SetNewPowerups(Toggle toggle) {
-        Hashtable properties = new() {
+    public void SetNewPowerups(Toggle toggle)
+    {
+        Hashtable properties = new()
+        {
             [Enums.NetRoomProperties.NewPowerups] = toggle.isOn
         };
         PhotonNetwork.CurrentRoom.SetCustomProperties(properties);
     }
-    public void EnableLives(Toggle toggle) {
-        Hashtable properties = new() {
+    public void SetIceRunMode(Toggle toggle)
+    {
+        Hashtable properties = new()
+        {
+            [Enums.NetRoomProperties.IceRunMode] = toggle.isOn
+        };
+        PhotonNetwork.CurrentRoom.SetCustomProperties(properties);
+    }
+    public void SetFriendlyFire(Toggle toggle)
+    {
+        Hashtable properties = new()
+        {
+            [Enums.NetRoomProperties.FriendlyFire] = toggle.isOn
+        };
+        PhotonNetwork.CurrentRoom.SetCustomProperties(properties);
+    }
+    public void EnableLives(Toggle toggle)
+    {
+        Hashtable properties = new()
+        {
             [Enums.NetRoomProperties.Lives] = toggle.isOn ? int.Parse(livesField.text) : -1
+        };
+        PhotonNetwork.CurrentRoom.SetCustomProperties(properties);
+    }
+    public void EnableScores(Toggle toggle)
+    {
+        Hashtable properties = new()
+        {
+            [Enums.NetRoomProperties.ScoreRequirement] = toggle.isOn ? int.Parse(scoresField.text) : -1
         };
         PhotonNetwork.CurrentRoom.SetCustomProperties(properties);
     }
@@ -932,6 +1004,8 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         livesField.interactable = PhotonNetwork.IsMasterClient && livesEnabled.isOn;
         timeField.interactable = PhotonNetwork.IsMasterClient && timeEnabled.isOn;
         drawTimeupToggle.interactable = PhotonNetwork.IsMasterClient && timeEnabled.isOn;
+
+        scoresField.interactable = PhotonNetwork.IsMasterClient && scoreModeEnabled.isOn;
 
         Utils.GetCustomProperty(Enums.NetRoomProperties.Debug, out bool debug);
         privateToggleRoom.interactable = PhotonNetwork.IsMasterClient && !debug;

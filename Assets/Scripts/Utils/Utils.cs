@@ -516,6 +516,7 @@ namespace NSMB.Utils {
             ['S'] = 23,
             ['/'] = 24,
             [':'] = 25,
+            ['Z'] = 50,
         };
         public static readonly Dictionary<char, byte> numberSymbols = new() {
             ['0'] = 27,

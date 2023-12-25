@@ -13,26 +13,28 @@ public class UIUpdater : MonoBehaviour {
     public GameObject playerTrackTemplate, starTrackTemplate;
     public PlayerController player;
     public Sprite storedItemNull;
-    public TMP_Text uiStars, uiCoins, uiDebug, uiLives, uiCountdown;
+    public TMP_Text uiScores, uiStars, uiCoins, uiDebug, uiLives, uiCountdown;
     public Image itemReserve, itemColor;
     public float pingSample = 0;
 
     private Material timerMaterial;
-    private GameObject starsParent, coinsParent, livesParent, timerParent;
+    private GameObject scoresParent, starsParent, coinsParent, livesParent, timerParent;
     private readonly List<Image> backgrounds = new();
     private bool uiHidden;
 
-    private int coins = -1, stars = -1, lives = -1, timer = -1;
+    private int scores = -1, coins = -1, stars = -1, lives = -1, timer = -1;
 
     public void Start() {
         Instance = this;
         pingSample = PhotonNetwork.GetPing();
 
+        scoresParent = uiScores.transform.parent.gameObject;
         starsParent = uiStars.transform.parent.gameObject;
         coinsParent = uiCoins.transform.parent.gameObject;
         livesParent = uiLives.transform.parent.gameObject;
         timerParent = uiCountdown.transform.parent.gameObject;
 
+        backgrounds.Add(scoresParent.GetComponentInChildren<Image>());
         backgrounds.Add(starsParent.GetComponentInChildren<Image>());
         backgrounds.Add(coinsParent.GetComponentInChildren<Image>());
         backgrounds.Add(livesParent.GetComponentInChildren<Image>());
@@ -71,6 +73,7 @@ public class UIUpdater : MonoBehaviour {
     private void ToggleUI(bool hidden) {
         uiHidden = hidden;
 
+        scoresParent.SetActive(!hidden);
         starsParent.SetActive(!hidden);
         livesParent.SetActive(!hidden);
         coinsParent.SetActive(!hidden);
@@ -87,6 +90,22 @@ public class UIUpdater : MonoBehaviour {
     private void UpdateTextUI() {
         if (!player || GameManager.Instance.gameover)
             return;
+
+        if (player.scores >= 0)
+        {
+            if (player.scores != scores)
+            {
+                scores = player.scores;
+                uiScores.text = Utils.GetSymbolString("Zx" + scores + "/" + GameManager.Instance.scoreRequirement);
+            }
+            starsParent.SetActive(false);
+            scoresParent.SetActive(true);
+        }
+        else
+        {
+            starsParent.SetActive(!player.isIceRunMode);
+            scoresParent.SetActive(false);
+        }
 
         if (player.stars != stars) {
             stars = player.stars;

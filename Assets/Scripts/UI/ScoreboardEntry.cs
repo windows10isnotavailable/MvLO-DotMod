@@ -12,7 +12,7 @@ public class ScoreboardEntry : MonoBehaviour {
 
     public PlayerController target;
 
-    private int playerId, currentLives, currentStars;
+    private int playerId, currentLives, currentStars, currentScores;
     private bool rainbowEnabled;
 
     public void Start() {
@@ -43,10 +43,11 @@ public class ScoreboardEntry : MonoBehaviour {
             background.color = new(0.4f, 0.4f, 0.4f, 0.5f);
             return;
         }
-        if (target.lives == currentLives && target.stars == currentStars)
+        if (currentScores == target.scores && target.lives == currentLives && target.stars == currentStars)
             // No changes.
             return;
 
+        currentScores = target.scores;
         currentLives = target.lives;
         currentStars = target.stars;
         UpdateText();
@@ -55,6 +56,9 @@ public class ScoreboardEntry : MonoBehaviour {
 
     public void UpdateText() {
         string txt = "";
+        if (target.isIceRunMode && currentScores >= 0)
+            txt += Utils.GetSymbolString($"Z{currentScores}");
+
         if (currentLives >= 0)
             txt += target.character.uistring + Utils.GetSymbolString(currentLives.ToString());
         txt += Utils.GetSymbolString($"S{currentStars}");

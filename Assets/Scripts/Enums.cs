@@ -31,6 +31,14 @@ public static class Enums {
         None, MiniMushroom, Small, Mushroom, FireFlower, IceFlower, PropellerMushroom, BlueShell, MegaMushroom
     }
     #endregion
+
+    #region LEVEL TYPE
+    public enum LevelType
+    {
+        Versus, Battle, Race
+    }
+    #endregion
+
     #region ANIMATION & MUSIC
     // Animation enums
     public enum PlayerEyeState {
@@ -170,6 +178,7 @@ public static class Enums {
         public static string Stars { get; } = "S";
         public static string Coins { get; } = "C";
         public static string Lives { get; } = "L";
+        public static string Scores { get; } = "Sc";
         public static string PowerupState { get; } = "P";
         public static string ReserveItem { get; } = "R";
     }
@@ -177,10 +186,13 @@ public static class Enums {
         public static string Level { get; } = "L";
         public static string StarRequirement { get; } = "S";
         public static string CoinRequirement { get; } = "Co";
+        public static string ScoreRequirement { get; } = "Sco";
         public static string Lives { get; } = "Li";
         public static string Time { get; } = "T";
         public static string DrawTime { get; } = "Dt";
         public static string NewPowerups { get; } = "C";
+        public static string IceRunMode { get; } = "Ic";
+        public static string FriendlyFire { get; } = "Fr";
         public static string GameStarted { get; } = "G";
         public static string HostName { get; } = "H";
         public static string Debug { get; } = "D";

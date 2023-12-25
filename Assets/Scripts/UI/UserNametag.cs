@@ -62,8 +62,12 @@ public class UserNametag : MonoBehaviour {
         text.text = (parent.photonView.Owner.IsMasterClient ? "<sprite=5>" : "") + parent.photonView.Owner.GetUniqueNickname();
 
         text.text += "\n";
+        if (parent.isIceRunMode && parent.scoreRequirement >= 0)
+            text.text += Utils.GetSymbolString($"Zx{parent.scores}");
+
         if (parent.lives >= 0)
             text.text += Utils.GetCharacterData(parent.photonView.Owner).uistring + Utils.GetSymbolString($"x{parent.lives} ");
+        
 
         text.text += Utils.GetSymbolString($"Sx{parent.stars}");
 

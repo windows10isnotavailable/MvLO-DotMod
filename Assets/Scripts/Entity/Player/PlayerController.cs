@@ -43,7 +43,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
 
     public bool onGround, previousOnGround, crushGround, doGroundSnap, jumping, properJump, hitRoof, skidding, turnaround, facingRight = true, singlejump, doublejump, triplejump, bounce, crouching, groundpound, groundpoundLastFrame, sliding, knockback, hitBlock, running, functionallyRunning, jumpHeld, flying, drill, inShell, hitLeft, hitRight, stuckInBlock, alreadyStuckInBlock, propeller, usedPropellerThisJump, stationaryGiantEnd, fireballKnockback, startedSliding, canShootProjectile;
     public float jumpLandingTimer, landing, koyoteTime, groundpoundCounter, groundpoundStartTimer, pickupTimer, groundpoundDelay, hitInvincibilityCounter, powerupFlash, throwInvincibility, jumpBuffer, giantStartTimer, giantEndTimer, propellerTimer, propellerSpinTimer, fireballTimer;
-    public float invincible, giantTimer, floorAngle, knockbackTimer, pipeTimer, slowdownTimer;
+    public float invincible, giantTimer, floorAngle, knockbackTimer, pipeTimer, slowdownTimer, scoreTimer;
 
     //MOVEMENT STAGES
     private static readonly int WALK_STAGE = 1, RUN_STAGE = 3, STAR_STAGE = 4;
@@ -105,7 +105,16 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
     }
 
     public Vector2 pipeDirection;
-    public int stars, coins, lives = -1;
+    public int stars, coins, lives, initLives = -1;
+
+    public int numOfLivePlayers = 1000;
+
+    public int scores, scoreRequirement = -1;
+
+    public bool isIceRunMode = false;
+    public bool isEnabledFriendlyFire = true;
+    public bool isRunner = false;
+
     public Powerup storedPowerup = null;
     public HoldableEntity holding, holdingOld;
     public FrozenCube frozenObject;
@@ -243,6 +252,16 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
 
         playerId = count;
         Utils.GetCustomProperty(Enums.NetRoomProperties.Lives, out lives);
+        Utils.GetCustomProperty(Enums.NetRoomProperties.IceRunMode, out isIceRunMode);
+        Utils.GetCustomProperty(Enums.NetRoomProperties.ScoreRequirement, out scoreRequirement);
+        Utils.GetCustomProperty(Enums.NetRoomProperties.FriendlyFire, out isEnabledFriendlyFire);
+
+        if (scoreRequirement < 0)
+            scores = -1;
+
+        UpdatePlayerCollide();
+
+        initLives = lives;
 
         if (photonView.IsMine) {
             InputSystem.controls.Player.Movement.performed += OnMovement;
@@ -264,6 +283,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
     public void Start() {
         hitboxes = GetComponents<BoxCollider2D>();
         trackIcon = UIUpdater.Instance.CreatePlayerIcon(this);
+
         transform.position = body.position = GameManager.Instance.spawnpoint;
 
         LoadFromGameState();
@@ -271,7 +291,39 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         cameraController.Recenter();
     }
 
+    public void SetRandomRunner(bool destroyPlayerFlag = false)
+    {
+        List<PlayerController> candidateRunners = new List<PlayerController>();
+
+        foreach (PlayerController pl in GameManager.Instance.players)
+        {
+            if (pl == null || pl.photonView == null || pl.photonView.Owner == null) continue;
+            if (pl == this && destroyPlayerFlag) continue;
+            if (pl.lives == 0) continue;
+            if (NetworkUtils.IsSpectator(pl.photonView.Owner)) continue;
+            if (pl.isRunner) continue;
+
+            candidateRunners.Add(pl);
+        }
+
+        int targetRunnerIndex = Random.Range(0, candidateRunners.Count);
+
+        if (destroyPlayerFlag)
+            candidateRunners[targetRunnerIndex].photonView.RPC(nameof(ForceChangeState), RpcTarget.All);
+        candidateRunners[targetRunnerIndex].photonView.RPC(nameof(SetRunner), RpcTarget.All, true);
+    }
+
     public void OnDestroy() {
+        if (isIceRunMode && !GameManager.Instance.gameover)
+        {
+            int newNumOfLivePlayers = GetNumOfLivePlayers() - 1;
+
+            foreach (PlayerController pl in GameManager.Instance.players)
+                pl.numOfLivePlayers = newNumOfLivePlayers;
+
+            if (isRunner && PhotonNetwork.IsMasterClient)
+                SetRandomRunner(true);
+        }
         if (!photonView.IsMine)
             return;
 
@@ -290,6 +342,9 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         gameState = new() {
             [Enums.NetPlayerProperties.GameState] = new Hashtable()
         };
+
+        if (PhotonNetwork.IsMasterClient && isIceRunMode)
+            SetRandomRunner(false);
     }
 
     public void LoadFromGameState() {
@@ -305,6 +360,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         lives = (int) gs[Enums.NetPlayerGameState.Lives];
         stars = (int) gs[Enums.NetPlayerGameState.Stars];
         coins = (int) gs[Enums.NetPlayerGameState.Coins];
+        scores = (int)gs[Enums.NetPlayerGameState.Scores];
         state = (Enums.PowerupState) gs[Enums.NetPlayerGameState.PowerupState];
         if (gs[Enums.NetPlayerGameState.ReserveItem] != null) {
             storedPowerup = (Powerup) Resources.Load("Scriptables/Powerups/" + (Enums.PowerupState) gs[Enums.NetPlayerGameState.ReserveItem]);
@@ -320,6 +376,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         UpdateGameStateVariable(Enums.NetPlayerGameState.Lives, lives);
         UpdateGameStateVariable(Enums.NetPlayerGameState.Stars, stars);
         UpdateGameStateVariable(Enums.NetPlayerGameState.Coins, coins);
+        UpdateGameStateVariable(Enums.NetPlayerGameState.Scores, scores);
         UpdateGameStateVariable(Enums.NetPlayerGameState.PowerupState, (byte) state);
         UpdateGameStateVariable(Enums.NetPlayerGameState.ReserveItem, storedPowerup ? storedPowerup.state : null);
 
@@ -417,6 +474,22 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
                         tilesHitSide.Add(vec);
                     }
                 }
+                if (photonView.IsMine)
+                {
+                    bool deathFlag = false;
+                    switch (go.tag)
+                    {
+                        case "poison":
+                            deathFlag = down >= 1;
+                            break;
+                        case "thorn":
+                            deathFlag = down >= 1 || left >= 1 | right >= 1 || (!ignoreRoof && up > 1);
+                            break;
+                    }
+
+                    if (deathFlag)
+                        photonView.RPC(nameof(Death), RpcTarget.All, false, false);
+                }
             }
         }
 
@@ -455,7 +528,6 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         switch (collision.gameObject.tag) {
         case "Player": {
             //hit players
-
             if (contacts.Length < collision.contactCount)
                 contacts = new ContactPoint2D[collision.contactCount];
             collision.GetContacts(contacts);
@@ -652,9 +724,21 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
                 photonView.RPC(nameof(Knockback), RpcTarget.All, fireball.left, 1, true, fireball.photonView.ViewID);
             } else {
                 if (!Frozen && !frozenObject && !pipeEntering) {
-                    GameObject cube = PhotonNetwork.Instantiate("Prefabs/FrozenCube", transform.position, Quaternion.identity, 0, new object[] { photonView.ViewID });
-                    frozenObject = cube.GetComponent<FrozenCube>();
-                    return;
+                    if (!isIceRunMode || (isIceRunMode && isRunner))
+                    {
+                        GameObject cube = PhotonNetwork.Instantiate("Prefabs/FrozenCube", transform.position, Quaternion.identity, 0, new object[] { photonView.ViewID });
+                        frozenObject = cube.GetComponent<FrozenCube>();
+                        if (isIceRunMode)
+                        {
+                            PlayerController attacker = GameManager.Instance.GetController(fireball.photonView.Controller);
+
+                            if (attacker == null) return; // attacker is not found.
+                            photonView.RPC(nameof(ForceChangeState), RpcTarget.All);
+                            photonView.RPC(nameof(SetRunner), RpcTarget.All, false);
+                            attacker.photonView.RPC(nameof(ForceChangeState), RpcTarget.All);
+                            attacker.photonView.RPC(nameof(SetRunner), RpcTarget.All, true);
+                        }
+                    }
                 }
             }
             break;
@@ -687,7 +771,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
 
         switch (obj.tag) {
         case "Powerup": {
-            if (!photonView.IsMine)
+            if (!photonView.IsMine || isIceRunMode)
                 return;
             MovingPowerup powerup = obj.GetComponentInParent<MovingPowerup>();
             if (powerup.followMeCounter > 0 || powerup.ignoreCounter > 0)
@@ -994,8 +1078,26 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
     }
 
     [PunRPC]
+    public void ForceChangeState()
+    {
+        if (state == Enums.PowerupState.PropellerMushroom)
+        {
+            state = Enums.PowerupState.IceFlower;
+        } else
+        {
+            state = Enums.PowerupState.PropellerMushroom;
+            hitInvincibilityCounter = 3f;
+        }
+        powerupFlash = 2f;
+        propeller = false;
+        propellerTimer = 0;
+        propellerSpinTimer = 0;
+        usedPropellerThisJump = false;
+    }
+
+    [PunRPC]
     public void Powerdown(bool ignoreInvincible) {
-        if (!ignoreInvincible && (hitInvincibilityCounter > 0 || invincible > 0))
+        if (!ignoreInvincible && (hitInvincibilityCounter > 0 || invincible > 0) || isIceRunMode)
             return;
 
         previousState = state;
@@ -1088,6 +1190,15 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
             hitInvincibilityCounter = 1.5f;
     }
     #endregion
+
+    [PunRPC]
+    public void SetScores(int score)
+    {
+        scores = score;
+        UpdateGameState();
+
+        GameManager.Instance.CheckForWinner();
+    }
 
     #region -- COIN / STAR COLLECTION --
     [PunRPC]
@@ -1258,6 +1369,19 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
     }
     #endregion
 
+    public int GetNumOfLivePlayers()
+    {
+        return GameManager.Instance.players.FindAll(
+            pl => (
+                pl != null && 
+                pl.photonView != null && 
+                pl.photonView.Owner != null && 
+                pl.lives != 0 && 
+                !NetworkUtils.IsSpectator(pl.photonView.Owner)
+            )
+        ).Count;
+    }
+
     #region -- DEATH / RESPAWNING --
     [PunRPC]
     protected void Death(bool deathplane, bool fire) {
@@ -1268,7 +1392,8 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         //    return;
 
         animator.Play("deadstart");
-        if (--lives == 0) {
+        if (--lives == 0)
+        {
             GameManager.Instance.CheckForWinner();
         }
 
@@ -1307,10 +1432,33 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         if (photonView.IsMine)
             ScoreboardUpdater.instance.OnDeathToggle();
     }
+    public bool isCancelPlayerCollision = false;
+    public void UpdatePlayerCollide()
+    {
+        foreach (PlayerController player in GameManager.Instance.players)
+        {
+            player.isCancelPlayerCollision = !(isIceRunMode && !isEnabledFriendlyFire && photonView.IsMine) && !player.isRunner && !player.photonView.IsMine;
+            player.HandleLayerState();
+        }
+    }
+
+    [PunRPC]
+    public void SetRunner(bool flag)
+    {
+        isRunner = flag;
+
+        if (flag)
+            UpdatePlayerCollide();
+
+        if (trackIcon != null)
+        {
+            TrackIcon icon = trackIcon.GetComponent<TrackIcon>();
+            icon.UpdateColor(flag);
+        }
+    }
 
     [PunRPC]
     public void PreRespawn() {
-
         sfx.enabled = true;
         if (lives == 0) {
             GameManager.Instance.CheckForWinner();
@@ -1351,6 +1499,18 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         dead = false;
         spawned = true;
         state = Enums.PowerupState.Small;
+        
+        if (isIceRunMode)
+        {
+            state = isRunner ? Enums.PowerupState.PropellerMushroom : Enums.PowerupState.IceFlower;
+        }
+
+        if (trackIcon != null)
+        {
+            TrackIcon icon = trackIcon.GetComponent<TrackIcon>();
+            icon.UpdateColor(isIceRunMode ? isRunner : false);
+        }
+
         previousState = Enums.PowerupState.Small;
         body.velocity = Vector2.zero;
         wallSlideLeft = false;
@@ -1383,6 +1543,18 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         inShell = false;
         landing = 0f;
         ResetKnockback();
+
+        if (isIceRunMode && isRunner && lives < initLives)
+        {
+            hitInvincibilityCounter = 0f;
+        }
+
+        if (lives == initLives)
+        {
+            numOfLivePlayers = GetNumOfLivePlayers();
+            scoreTimer = 0f;
+        }
+
         Instantiate(Resources.Load("Prefabs/Particle/Puff"), transform.position, Quaternion.identity);
         models.transform.rotation = Quaternion.Euler(0, 180, 0);
 
@@ -1775,7 +1947,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
 
     void HandleLayerState() {
         bool hitsNothing = animator.GetBool("pipe") || dead || stuckInBlock || giantStartTimer > 0 || (giantEndTimer > 0 && stationaryGiantEnd);
-        bool shouldntCollide = (hitInvincibilityCounter > 0 && invincible <= 0) || (knockback && !fireballKnockback);
+        bool shouldntCollide = (hitInvincibilityCounter > 0 && invincible <= 0) || (knockback && !fireballKnockback) || (!isEnabledFriendlyFire && isCancelPlayerCollision);
 
         int layer = Layers.LayerDefault;
         if (hitsNothing) {
@@ -2144,7 +2316,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         bool run = functionallyRunning && (!flying || state == Enums.PowerupState.MegaMushroom);
 
         int maxStage;
-        if (invincible > 0 && run && onGround)
+        if ((invincible > 0 || (isIceRunMode && !isRunner && numOfLivePlayers <= 2)) && run && onGround)
             maxStage = STAR_STAGE;
         else if (run)
             maxStage = RUN_STAGE;
@@ -2381,6 +2553,14 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         Utils.TickTimer(ref pickupTimer, 0, -delta, pickupTime);
         Utils.TickTimer(ref fireballTimer, 0, delta);
         Utils.TickTimer(ref slowdownTimer, 0, delta * 0.5f);
+
+        if (isIceRunMode && scoreRequirement >= 0 && isRunner && photonView.IsMine)
+        {
+            Utils.TickTimer(ref scoreTimer, 0, -delta);
+            scores = (int)(scoreTimer / 3); // 3 sec = 1 score
+
+            photonView.RPC(nameof(SetScores), RpcTarget.All, scores);
+        }
 
         if (onGround)
             Utils.TickTimer(ref landing, 0, -delta);

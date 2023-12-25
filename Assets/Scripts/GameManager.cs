@@ -31,7 +31,9 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
         private set => _instance = value;
     }
 
-    public MusicData mainMusic, invincibleMusic, megaMushroomMusic;
+    public MusicData mainMusic, invincibleMusic, megaMushroomMusic, iceRunModeMusic;
+
+    public Enums.LevelType levelType = Enums.LevelType.Versus;
 
     public int levelMinTileX, levelMinTileY, levelWidthTile, levelHeightTile;
     public float cameraMinY, cameraHeightY, cameraMinX = -1000, cameraMaxX = 1000;
@@ -61,9 +63,10 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
     public GameObject pauseUI, pausePanel, pauseButton, hostExitUI, hostExitButton;
     public bool gameover = false, musicEnabled = false;
     public readonly HashSet<Player> loadedPlayers = new();
-    public int starRequirement, timedGameDuration = -1, coinRequirement;
+    public int starRequirement, timedGameDuration = -1, coinRequirement, scoreRequirement;
     public bool hurryup = false;
     public bool tenSecondCountdown = false;
+    public bool isIceRunMode = false;
 
     public int playerCount = 1;
     public List<PlayerController> players = new();
@@ -378,11 +381,16 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
         nonSpectatingPlayers = PhotonNetwork.CurrentRoom.Players.Values.Where(pl => !pl.IsSpectator()).ToHashSet();
         CheckIfAllLoaded();
 
-        if (musicEnabled && FindObjectsOfType<PlayerController>().Length <= 0) {
-            //all players left.
-            if (PhotonNetwork.IsMasterClient)
-                PhotonNetwork.RaiseEvent((byte) Enums.NetEventIds.EndGame, null, NetworkUtils.EventAll, SendOptions.SendReliable);
+        if (musicEnabled)
+        {
+            if (FindObjectsOfType<PlayerController>().Length <= 0)
+            {
+                //all players left.
+                if (PhotonNetwork.IsMasterClient)
+                    PhotonNetwork.RaiseEvent((byte)Enums.NetEventIds.EndGame, null, NetworkUtils.EventAll, SendOptions.SendReliable);
+            }
         }
+
     }
 
     // CONNECTION CALLBACKS
@@ -444,6 +452,11 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
         starSpawns = GameObject.FindGameObjectsWithTag("StarSpawn");
         Utils.GetCustomProperty(Enums.NetRoomProperties.StarRequirement, out starRequirement);
         Utils.GetCustomProperty(Enums.NetRoomProperties.CoinRequirement, out coinRequirement);
+        Utils.GetCustomProperty(Enums.NetRoomProperties.ScoreRequirement, out scoreRequirement);
+        Utils.GetCustomProperty(Enums.NetRoomProperties.IceRunMode, out isIceRunMode);
+
+        if (levelType == Enums.LevelType.Race)
+            starRequirement = 1;
 
         SceneManager.SetActiveScene(gameObject.scene);
 
@@ -471,8 +484,9 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
         loaded = true;
     }
 
-    private PlayerController GetController(Player player) {
+    public PlayerController GetController(Player player) {
         foreach (PlayerController pl in players) {
+            if (pl == null || pl.photonView == null) continue;
             if (pl.photonView.Owner == player)
                 return pl;
         }
@@ -513,13 +527,17 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
 
         playerCount = players.Count;
         foreach (PlayerController controllers in players)
-            if (controllers) {
-                if (spectating && controllers.sfx) {
+        {
+            if (controllers)
+            {
+                if (spectating && controllers.sfx)
+                {
                     controllers.sfxBrick.enabled = true;
                     controllers.sfx.enabled = true;
                 }
                 controllers.gameObject.SetActive(spectating);
             }
+        }
 
         try {
             ScoreboardUpdater.instance.Populate(players);
@@ -697,6 +715,7 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
         bool starGame = starRequirement != -1;
         bool timeUp = endServerTime != -1 && endServerTime - Time.deltaTime - PhotonNetwork.ServerTimestamp < 0;
         int winningStars = -1;
+        int winningScores = -1;
         List<PlayerController> winningPlayers = new();
         List<PlayerController> alivePlayers = new();
         foreach (var player in players) {
@@ -705,15 +724,41 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
 
             alivePlayers.Add(player);
 
-            if ((starGame && player.stars >= starRequirement) || timeUp) {
+            if ((starGame && player.stars >= starRequirement) || timeUp || (isIceRunMode && scoreRequirement >= 0 && player.scores >= scoreRequirement)) {
                 //we're in a state where this player would win.
                 //check if someone has more stars
-                if (player.stars > winningStars) {
-                    winningPlayers.Clear();
-                    winningStars = player.stars;
-                    winningPlayers.Add(player);
-                } else if (player.stars == winningStars) {
-                    winningPlayers.Add(player);
+                if (isIceRunMode)
+                {
+                    if (scoreRequirement >= 0) // score mode
+                    {
+                        if (player.scores > winningScores)
+                        {
+                            winningPlayers.Clear();
+                            winningScores = player.scores;
+                            winningPlayers.Add(player);
+                        }
+                        else if (player.scores == winningScores)
+                        {
+                            winningPlayers.Add(player);
+                        }
+                    } else
+                    {
+                        if (player.isRunner)
+                            winningPlayers.Add(player);
+                    }
+                }
+                else
+                {
+                    if (player.stars > winningStars)
+                    {
+                        winningPlayers.Clear();
+                        winningStars = player.stars;
+                        winningPlayers.Add(player);
+                    }
+                    else if (player.stars == winningStars)
+                    {
+                        winningPlayers.Add(player);
+                    }
                 }
             }
         }
@@ -735,11 +780,11 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
                 // it's a draw! Thanks for playing the demo!
                 PhotonNetwork.RaiseEvent((byte) Enums.NetEventIds.EndGame, null, NetworkUtils.EventAll, SendOptions.SendReliable);
             else if (winningPlayers.Count == 1)
-                PhotonNetwork.RaiseEvent((byte) Enums.NetEventIds.EndGame, winningPlayers[0].photonView.Owner, NetworkUtils.EventAll, SendOptions.SendReliable);
+                PhotonNetwork.RaiseEvent((byte)Enums.NetEventIds.EndGame, winningPlayers[0].photonView.Owner, NetworkUtils.EventAll, SendOptions.SendReliable);
 
             return;
         }
-        if (starGame && winningStars >= starRequirement) {
+        if (starGame && winningStars >= starRequirement || (isIceRunMode && scoreRequirement >= 0 && winningScores >= scoreRequirement)) {
             if (winningPlayers.Count == 1)
                 PhotonNetwork.RaiseEvent((byte) Enums.NetEventIds.EndGame, winningPlayers[0].photonView.Owner, NetworkUtils.EventAll, SendOptions.SendReliable);
 
@@ -768,20 +813,38 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
                 mega = true;
             if (player.invincible > 0)
                 invincible = true;
-            if ((player.stars + 1f) / starRequirement >= 0.95f || hurryup != false)
-                speedup = true;
+            if (isIceRunMode)
+            {
+                if ((player.scores + 1f) / scoreRequirement >= 0.75f || hurryup != false)
+                    speedup = true;
+            } else
+            {
+                if ((player.stars + 1f) / starRequirement >= 0.95f || hurryup != false)
+                    speedup = true;
+            }
             if (player.lives == 1 && players.Count <= 2)
                 speedup = true;
         }
 
         speedup |= players.All(pl => !pl || pl.lives == 1 || pl.lives == 0);
 
-        if (mega) {
-            PlaySong(Enums.MusicState.MegaMushroom, megaMushroomMusic);
-        } else if (invincible) {
-            PlaySong(Enums.MusicState.Starman, invincibleMusic);
-        } else {
-            PlaySong(Enums.MusicState.Normal, mainMusic);
+        if (isIceRunMode)
+        {
+            PlaySong(Enums.MusicState.Normal, iceRunModeMusic);
+        } else
+        {
+            if (mega)
+            {
+                PlaySong(Enums.MusicState.MegaMushroom, megaMushroomMusic);
+            }
+            else if (invincible)
+            {
+                PlaySong(Enums.MusicState.Starman, invincibleMusic);
+            }
+            else
+            {
+                PlaySong(Enums.MusicState.Normal, mainMusic);
+            }
         }
 
         loopMusic.FastMusic = speedup;
