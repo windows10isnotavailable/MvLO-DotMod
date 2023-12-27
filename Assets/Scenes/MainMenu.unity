@@ -13782,7 +13782,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 37.35
+  m_fontSize: 36.35
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -35264,6 +35264,7 @@ MonoBehaviour:
   - {fileID: 927866350}
   - {fileID: 1215474819}
   - {fileID: 1774958591}
+  - {fileID: 978599145}
   - {fileID: 1477183160}
   - {fileID: 1477183160}
   - {fileID: 1477183160}
@@ -35343,6 +35344,7 @@ MonoBehaviour:
   connectThroughSecret: 
   selectedRoom: 
   askedToJoin: 0
+  previousStartGameBtnInteractable: 0
   overallColor: {fileID: 1385748054}
   shirtColor: {fileID: 584898080}
   palette: {fileID: 1087430716}
@@ -35371,6 +35373,7 @@ MonoBehaviour:
   - '[C] Volcano'
   - '[C] Bonus'
   - '[C] Desert'
+  - '[C] UnderGround'
   - '[B] FieldA'
   - '[B] FieldB'
   - '[B] Sumo'
@@ -47997,8 +48000,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 47220571}
   m_HandleRect: {fileID: 47220570}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.60853887
+  m_Value: 0.99999976
+  m_Size: 0.59553
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -91101,7 +91104,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1141870934}
   m_HandleRect: {fileID: 1141870933}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

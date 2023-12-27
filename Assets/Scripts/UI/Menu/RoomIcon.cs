@@ -36,6 +36,8 @@ public class RoomIcon : MonoBehaviour {
         Utils.GetCustomProperty(Enums.NetRoomProperties.StarRequirement, out int stars, newRoom.CustomProperties);
         Utils.GetCustomProperty(Enums.NetRoomProperties.CoinRequirement, out int coins, newRoom.CustomProperties);
         Utils.GetCustomProperty(Enums.NetRoomProperties.Lives, out int lives, newRoom.CustomProperties);
+        Utils.GetCustomProperty(Enums.NetRoomProperties.ScoreRequirement, out int scoreRequirement, newRoom.CustomProperties);
+        Utils.GetCustomProperty(Enums.NetRoomProperties.IceRunMode, out bool isIceRunMode, newRoom.CustomProperties);
         bool powerups = (bool) prop[Enums.NetRoomProperties.NewPowerups];
         bool time = ((int) prop[Enums.NetRoomProperties.Time]) >= 1;
         //bool password = ((string) prop[Enums.NetRoomProperties.Password]) != "";
@@ -45,6 +47,13 @@ public class RoomIcon : MonoBehaviour {
         if (time)
             symbols += "<sprite=6>";
 
+        if (isIceRunMode)
+        {
+            symbols += "<sprite=52>";
+            if (scoreRequirement >= 0)
+                symbols += "<sprite=51>" + Utils.GetSymbolString(scoreRequirement.ToString(), Utils.smallSymbols);
+        }
+
         if (lives >= 1)
             symbols += "<sprite=9>" + Utils.GetSymbolString(lives.ToString(), Utils.smallSymbols);
 
@@ -52,6 +61,7 @@ public class RoomIcon : MonoBehaviour {
         symbols += "<sprite=37>" + Utils.GetSymbolString(coins.ToString(), Utils.smallSymbols);
         //if (password)
         //    symbols += "<sprite=7>";
+        Debug.Log(symbols);
 
         symbolsText.text = symbols;
     }

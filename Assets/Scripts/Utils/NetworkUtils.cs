@@ -53,6 +53,8 @@ namespace NSMB.Utils {
         Enums.NetRoomProperties.Lives,
         Enums.NetRoomProperties.StarRequirement,
         Enums.NetRoomProperties.CoinRequirement,
+        Enums.NetRoomProperties.ScoreRequirement,
+        Enums.NetRoomProperties.IceRunMode,
         Enums.NetRoomProperties.Time,
         Enums.NetRoomProperties.NewPowerups,
         Enums.NetRoomProperties.GameStarted,

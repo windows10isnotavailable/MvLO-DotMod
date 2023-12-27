@@ -44,6 +44,8 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
     public string selectedRoom;
     public bool askedToJoin;
 
+    public bool previousStartGameBtnInteractable;
+
     public Image overallColor, shirtColor;
     public GameObject palette, paletteDisabled;
 
@@ -802,6 +804,7 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
     public void ChangeIceRunMode(bool value)
     {
         iceRunModeEnabled.SetIsOnWithoutNotify(value);
+        UpdateSettingEnableStates();
     }
 
     public void ChangeFriendlyFire(bool value)
@@ -1016,6 +1019,13 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         }).Count();
 
         startGameBtn.interactable = PhotonNetwork.IsMasterClient && playingPlayers >= 1;
+        if (iceRunModeEnabled.isOn && !timeEnabled.isOn && !scoreModeEnabled.isOn)
+        {
+            startGameBtn.interactable = false;
+            if (previousStartGameBtnInteractable != startGameBtn.interactable)
+                LocalChatMessage("If you want to disable \"Scores to Win\" with \"Ice Run Mode\" enabled, enable Timer.", Color.red);
+        }
+        previousStartGameBtnInteractable = startGameBtn.interactable;
     }
 
     public void PlayerChatMessage(string message) {
@@ -1413,7 +1423,7 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
     }
 
     public void OpenDownloadsPage() {
-        Application.OpenURL("https://github.com/ipodtouch0218/NSMB-MarioVsLuigi/releases/latest");
+        Application.OpenURL("https://github.com/windows10isnotavailable/MvLO-DotMod/releases/latest");
         OpenMainMenu();
     }
 
