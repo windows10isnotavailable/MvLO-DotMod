@@ -10460,6 +10460,7 @@ MonoBehaviour:
   numOfLivePlayers: 1000
   scores: 0
   scoreRequirement: -1
+  isCancelPlayerCollision: 0
   isIceRunMode: 0
   isEnabledFriendlyFire: 0
   isRunner: 0
@@ -10477,7 +10478,6 @@ MonoBehaviour:
   alreadyGroundpounded: 0
   character: {fileID: 11400000, guid: 8e33573d2c2ae7c4682fc6cdb5ea28cd, type: 2}
   onIce: 0
-  isCancelPlayerCollision: 0
 --- !u!114 &79918617084146557
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -111,6 +111,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
 
     public int scores, scoreRequirement = -1;
 
+    public bool isCancelPlayerCollision = false;
     public bool isIceRunMode = false;
     public bool isEnabledFriendlyFire = true;
     public bool isRunner = false;
@@ -1432,7 +1433,6 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         if (photonView.IsMine)
             ScoreboardUpdater.instance.OnDeathToggle();
     }
-    public bool isCancelPlayerCollision = false;
     public void UpdatePlayerCollide()
     {
         foreach (PlayerController player in GameManager.Instance.players)
@@ -1547,6 +1547,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         if (isIceRunMode && isRunner && lives < initLives)
         {
             hitInvincibilityCounter = 0f;
+            usedPropellerThisJump = true;
         }
 
         if (lives == initLives)
@@ -1947,7 +1948,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
 
     void HandleLayerState() {
         bool hitsNothing = animator.GetBool("pipe") || dead || stuckInBlock || giantStartTimer > 0 || (giantEndTimer > 0 && stationaryGiantEnd);
-        bool shouldntCollide = (hitInvincibilityCounter > 0 && invincible <= 0) || (knockback && !fireballKnockback) || (!isEnabledFriendlyFire && isCancelPlayerCollision);
+        bool shouldntCollide = (hitInvincibilityCounter > 0 && invincible <= 0) || (knockback && !fireballKnockback) || (!isEnabledFriendlyFire && isCancelPlayerCollision) || GameManager.Instance.levelType == Enums.LevelType.Race;
 
         int layer = Layers.LayerDefault;
         if (hitsNothing) {
