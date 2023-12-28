@@ -292,28 +292,6 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         cameraController.Recenter();
     }
 
-    public void SetRandomRunner(bool destroyPlayerFlag = false)
-    {
-        List<PlayerController> candidateRunners = new List<PlayerController>();
-
-        foreach (PlayerController pl in GameManager.Instance.players)
-        {
-            if (pl == null || pl.photonView == null || pl.photonView.Owner == null) continue;
-            if (pl == this && destroyPlayerFlag) continue;
-            if (pl.lives == 0) continue;
-            if (NetworkUtils.IsSpectator(pl.photonView.Owner)) continue;
-            if (pl.isRunner) continue;
-
-            candidateRunners.Add(pl);
-        }
-
-        int targetRunnerIndex = Random.Range(0, candidateRunners.Count);
-
-        if (destroyPlayerFlag)
-            candidateRunners[targetRunnerIndex].photonView.RPC(nameof(ForceChangeState), RpcTarget.All);
-        candidateRunners[targetRunnerIndex].photonView.RPC(nameof(SetRunner), RpcTarget.All, true);
-    }
-
     public void OnDestroy() {
         if (isIceRunMode && !GameManager.Instance.gameover)
         {
@@ -323,7 +301,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
                 pl.numOfLivePlayers = newNumOfLivePlayers;
 
             if (isRunner && PhotonNetwork.IsMasterClient)
-                SetRandomRunner(true);
+                IceRunModeUtils.SetRandomRunner(this);
         }
         if (!photonView.IsMine)
             return;
@@ -343,9 +321,6 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         gameState = new() {
             [Enums.NetPlayerProperties.GameState] = new Hashtable()
         };
-
-        if (PhotonNetwork.IsMasterClient && isIceRunMode)
-            SetRandomRunner(false);
     }
 
     public void LoadFromGameState() {
@@ -1948,7 +1923,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
 
     void HandleLayerState() {
         bool hitsNothing = animator.GetBool("pipe") || dead || stuckInBlock || giantStartTimer > 0 || (giantEndTimer > 0 && stationaryGiantEnd);
-        bool shouldntCollide = (hitInvincibilityCounter > 0 && invincible <= 0) || (knockback && !fireballKnockback) || (!isEnabledFriendlyFire && isCancelPlayerCollision) || GameManager.Instance.levelType == Enums.LevelType.Race;
+        bool shouldntCollide = (hitInvincibilityCounter > 0 && invincible <= 0) || (knockback && !fireballKnockback) || (isIceRunMode && !isEnabledFriendlyFire && isCancelPlayerCollision) || GameManager.Instance.levelType == Enums.LevelType.Race;
 
         int layer = Layers.LayerDefault;
         if (hitsNothing) {

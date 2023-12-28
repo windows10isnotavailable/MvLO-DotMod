@@ -508,6 +508,9 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
             //clear buffered loading complete events.
             RaiseEventOptions options = new() { Receivers = ReceiverGroup.All, CachingOption = EventCaching.RemoveFromRoomCache };
             PhotonNetwork.RaiseEvent((byte) Enums.NetEventIds.PlayerFinishedLoading, null, options, SendOptions.SendReliable);
+
+            if (isIceRunMode)
+                IceRunModeUtils.SetRandomRunner();
         }
 
         yield return new WaitForSeconds(Mathf.Max(1f, (startTimestamp - PhotonNetwork.ServerTimestamp) / 1000f));

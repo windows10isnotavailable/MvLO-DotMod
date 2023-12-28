@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_DefaultSprite: {fileID: -538031467, guid: 01839fef0452b15468db88f4a03aec16, type: 3}
   m_DefaultGameObject: {fileID: 0}
-  m_DefaultColliderType: 1
+  m_DefaultColliderType: 2
   m_TilingRules:
   - m_Id: 0
     m_Sprites:
@@ -234,4 +234,3 @@ MonoBehaviour:
   isBackgroundTile: 0
   iceSkidding: 0
   footstepSound: 31
-  frictionFactor: 1
