@@ -10,10 +10,14 @@ public class ScoreboardEntry : MonoBehaviour {
     [SerializeField] private TMP_Text nameText, valuesText;
     [SerializeField] private Image background;
 
+    private Color backgroundColor;
+    private bool isRunner;
+
     public PlayerController target;
 
     private int playerId, currentLives, currentStars, currentScores;
     private bool rainbowEnabled;
+
 
     public void Start() {
         if (!target) {
@@ -26,6 +30,8 @@ public class ScoreboardEntry : MonoBehaviour {
 
         Color c = target.AnimationController.GlowColor;
         background.color = new(c.r, c.g, c.b, 0.5f);
+
+        backgroundColor = background.color;
 
         rainbowEnabled = target.photonView.Owner.HasRainbowName();
     }
@@ -43,15 +49,24 @@ public class ScoreboardEntry : MonoBehaviour {
             background.color = new(0.4f, 0.4f, 0.4f, 0.5f);
             return;
         }
-        if (currentScores == target.scores && target.lives == currentLives && target.stars == currentStars)
+        if (currentScores == target.scores && target.lives == currentLives && target.stars == currentStars && target.isRunner == isRunner)
             // No changes.
             return;
 
         currentScores = target.scores;
         currentLives = target.lives;
         currentStars = target.stars;
+
+        isRunner = target.isRunner;
+
         UpdateText();
+        UpdateBackgroundColor();
         ScoreboardUpdater.instance.Reposition();
+    }
+
+    private void UpdateBackgroundColor()
+    {
+        background.color = target.isIceRunMode && isRunner ? IceRunModeUtils.ScoreboardRunnerColor : backgroundColor;
     }
 
     public void UpdateText() {
@@ -61,7 +76,8 @@ public class ScoreboardEntry : MonoBehaviour {
 
         if (currentLives >= 0)
             txt += target.character.uistring + Utils.GetSymbolString(currentLives.ToString());
-        txt += Utils.GetSymbolString($"S{currentStars}");
+        if (!target.isIceRunMode)
+            txt += Utils.GetSymbolString($"S{currentStars}");
 
         valuesText.text = txt;
     }

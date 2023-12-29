@@ -33,7 +33,7 @@ public class TrackIcon : MonoBehaviour {
         {
             if (!playerTarget)
                 playerTarget = target.GetComponent<PlayerController>();
-            Color newColor = runnerFlag ? Color.black : playerTarget.AnimationController.GlowColor;
+            Color newColor = runnerFlag ? Color.white : playerTarget.AnimationController.GlowColor;
             image.color = newColor;
             mat.SetColor("OverlayColor", newColor);
         }

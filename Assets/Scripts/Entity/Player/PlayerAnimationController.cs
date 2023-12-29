@@ -10,9 +10,11 @@ public class PlayerAnimationController : MonoBehaviourPun {
     [SerializeField] private ParticleSystem dust, sparkles, drillParticle, giantParticle, fireParticle;
     [SerializeField] private GameObject models, smallModel, largeModel, largeShellExclude, blueShell, propellerHelmet, propeller;
     [SerializeField] private Material glowMaterial;
-    [SerializeField] private Color primaryColor = Color.clear, secondaryColor = Color.clear, primaryColorAtStart = Color.clear, secondaryColorAtStart = Color.clear;
+    [SerializeField] private Color primaryColor = Color.clear, secondaryColor = Color.clear;
     [SerializeField] [ColorUsage(true, false)] private Color? _glowColor = null;
     [SerializeField] private float blinkDuration = 0.1f, pipeDuration = 2f, deathUpTime = 0.6f, deathForce = 7f;
+
+    private Color primaryColorAtStart = Color.clear, secondaryColorAtStart = Color.clear;
 
     private PlayerController controller;
     private Animator animator;
@@ -186,9 +188,6 @@ public class PlayerAnimationController : MonoBehaviourPun {
         bool left = controller.joystick.x < -0.35f;
 
         bool isRunner = controller != null && controller.isIceRunMode && controller.isRunner;
-
-        primaryColor = isRunner ? Color.white : primaryColorAtStart;
-        secondaryColor = isRunner ? Color.black : secondaryColorAtStart;
 
         animator.SetBool("onLeft", controller.wallSlideLeft);
         animator.SetBool("onRight", controller.wallSlideRight);

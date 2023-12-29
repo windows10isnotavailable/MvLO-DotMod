@@ -2545,8 +2545,6 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
 
         if (isIceRunMode && trackIcon != null && previousIsRunner != isRunner)
         {
-            if (isRunner)
-                UpdatePlayerCollide();
             TrackIcon icon = trackIcon.GetComponent<TrackIcon>();
             icon.UpdateColor(isRunner);
         }

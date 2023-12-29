@@ -7,6 +7,7 @@ namespace NSMB.Utils
 {
     public static class IceRunModeUtils
     {
+        public static Color ScoreboardRunnerColor = new Color(1f, 1f, 1f, 0.5f);
 
         public static void SetRandomRunner(PlayerController invokePl = null)
         {
