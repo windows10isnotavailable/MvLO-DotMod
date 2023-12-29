@@ -7,7 +7,7 @@
   </head>
   <body style="text-align: center">
     <canvas id="unity-canvas" width=960 height=540 style="width: 960px; height: 540px; background: #231F20"></canvas>
-    <script src="Build/DotMod107.0.3-Web.loader.js"></script>
+    <script src="Build/DotMod107.0.4-Web.loader.js"></script>
     <script>
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         // Mobile device style: fill the whole browser client area with the game canvas:
@@ -18,13 +18,13 @@
       }
 
       createUnityInstance(document.querySelector("#unity-canvas"), {
-        dataUrl: "Build/DotMod107.0.3-Web.data.unityweb",
-        frameworkUrl: "Build/DotMod107.0.3-Web.framework.js.unityweb",
-        codeUrl: "Build/DotMod107.0.3-Web.wasm.unityweb",
+        dataUrl: "Build/DotMod107.0.4-Web.data.unityweb",
+        frameworkUrl: "Build/DotMod107.0.4-Web.framework.js.unityweb",
+        codeUrl: "Build/DotMod107.0.4-Web.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "ipodtouch0218",
         productName: "NSMB-MarioVsLuigi",
-        productVersion: "107.0.3.0-DotMod",
+        productVersion: "107.0.4.0-DotMod",
         // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
         // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
       });
