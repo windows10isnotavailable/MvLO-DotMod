@@ -111,6 +111,8 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
 
     public int scores, scoreRequirement = -1;
 
+    private bool previousIsRunner = false;
+
     public bool isCancelPlayerCollision = false;
     public bool isIceRunMode = false;
     public bool isEnabledFriendlyFire = true;
@@ -707,12 +709,13 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
                         if (isIceRunMode)
                         {
                             PlayerController attacker = GameManager.Instance.GetController(fireball.photonView.Controller);
+                            PhotonView attackerView = attacker.photonView;
 
                             if (attacker == null) return; // attacker is not found.
                             photonView.RPC(nameof(ForceChangeState), RpcTarget.All);
                             photonView.RPC(nameof(SetRunner), RpcTarget.All, false);
-                            attacker.photonView.RPC(nameof(ForceChangeState), RpcTarget.All);
-                            attacker.photonView.RPC(nameof(SetRunner), RpcTarget.All, true);
+                            attackerView.RPC(nameof(ForceChangeState), RpcTarget.All);
+                            attackerView.RPC(nameof(SetRunner), RpcTarget.All, true);
                         }
                     }
                 }
@@ -1412,6 +1415,9 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
     {
         foreach (PlayerController player in GameManager.Instance.players)
         {
+            if (player == null || player.photonView == null || player.photonView.Owner == null) continue;
+            if (player.lives == 0) continue;
+            if (NetworkUtils.IsSpectator(player.photonView.Owner)) continue;
             player.isCancelPlayerCollision = !(isIceRunMode && !isEnabledFriendlyFire && photonView.IsMine) && !player.isRunner && !player.photonView.IsMine;
             player.HandleLayerState();
         }
@@ -2504,7 +2510,6 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         body.velocity = Vector2.right * 2f;
         return true;
     }
-
     void TickCounters() {
         float delta = Time.fixedDeltaTime;
         if (!pipeEntering)
@@ -2538,8 +2543,18 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
             photonView.RPC(nameof(SetScores), RpcTarget.All, scores);
         }
 
+        if (isIceRunMode && trackIcon != null && previousIsRunner != isRunner)
+        {
+            if (isRunner)
+                UpdatePlayerCollide();
+            TrackIcon icon = trackIcon.GetComponent<TrackIcon>();
+            icon.UpdateColor(isRunner);
+        }
+
         if (onGround)
             Utils.TickTimer(ref landing, 0, -delta);
+
+        previousIsRunner = isRunner;
     }
 
     [PunRPC]

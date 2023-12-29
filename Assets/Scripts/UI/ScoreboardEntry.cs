@@ -71,6 +71,19 @@ public class ScoreboardEntry : MonoBehaviour {
             if (x.target == null ^ y.target == null)
                 return x.target == null ? 1 : -1;
 
+            if (x.target.isIceRunMode && x.currentScores >= 0)
+            {
+                if (x.currentScores == y.currentScores || x.currentLives == 0 || y.currentLives == 0)
+                {
+                    if (Mathf.Max(0, x.currentLives) == Mathf.Max(0, y.currentLives))
+                        return x.playerId - y.playerId;
+
+                    return y.currentLives - x.currentLives;
+                }
+
+                return y.currentScores - x.currentScores;
+            }
+
             if (x.currentStars == y.currentStars || x.currentLives == 0 || y.currentLives == 0) {
                 if (Mathf.Max(0, x.currentLives) == Mathf.Max(0, y.currentLives))
                     return x.playerId - y.playerId;

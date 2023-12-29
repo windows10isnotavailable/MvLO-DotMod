@@ -7,6 +7,7 @@ namespace NSMB.Utils
 {
     public static class IceRunModeUtils
     {
+
         public static void SetRandomRunner(PlayerController invokePl = null)
         {
             List<PlayerController> candidateRunners = new List<PlayerController>();

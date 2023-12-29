@@ -61,7 +61,6 @@ public class RoomIcon : MonoBehaviour {
         symbols += "<sprite=37>" + Utils.GetSymbolString(coins.ToString(), Utils.smallSymbols);
         //if (password)
         //    symbols += "<sprite=7>";
-        Debug.Log(symbols);
 
         symbolsText.text = symbols;
     }
