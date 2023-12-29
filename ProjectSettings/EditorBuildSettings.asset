@@ -45,6 +45,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Levels/CustomUnderGround.unity
     guid: 803aaee348b09f548b64ba8907a0805b
   - enabled: 1
+    path: Assets/Scenes/Levels/CustomKoopaIsland.unity
+    guid: 37e0b7a4e4986b045b4e1e45bf5c7625
+  - enabled: 1
     path: Assets/Scenes/Levels/BattleFieldA.unity
     guid: 95dff6cd36cc12647a0e89305962853e
   - enabled: 1

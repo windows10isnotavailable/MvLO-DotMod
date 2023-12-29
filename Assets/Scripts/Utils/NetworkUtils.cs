@@ -30,7 +30,7 @@ namespace NSMB.Utils {
             [Enums.NetRoomProperties.Lives] = -1,
             [Enums.NetRoomProperties.Time] = -1,
             [Enums.NetRoomProperties.IceRunMode] = false,
-            [Enums.NetRoomProperties.FriendlyFire] = true,
+            [Enums.NetRoomProperties.FriendlyFire] = false,
             [Enums.NetRoomProperties.DrawTime] = false,
             [Enums.NetRoomProperties.NewPowerups] = true,
             [Enums.NetRoomProperties.GameStarted] = false,
