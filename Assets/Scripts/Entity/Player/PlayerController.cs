@@ -109,7 +109,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
 
     public int numOfLivePlayers = 1000;
 
-    public int scores, scoreRequirement = -1;
+    public int scores, previousScores, scoreRequirement = -1;
 
     private bool previousIsRunner = false;
 
@@ -2540,7 +2540,8 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
             Utils.TickTimer(ref scoreTimer, 0, -delta);
             scores = (int)(scoreTimer / 3); // 3 sec = 1 score
 
-            photonView.RPC(nameof(SetScores), RpcTarget.All, scores);
+            if (previousScores != scores)
+                photonView.RPC(nameof(SetScores), RpcTarget.All, scores);
         }
 
         if (isIceRunMode && trackIcon != null && previousIsRunner != isRunner)
@@ -2553,6 +2554,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
             Utils.TickTimer(ref landing, 0, -delta);
 
         previousIsRunner = isRunner;
+        previousScores = scores;
     }
 
     [PunRPC]

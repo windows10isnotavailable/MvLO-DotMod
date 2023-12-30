@@ -10459,6 +10459,7 @@ MonoBehaviour:
   initLives: -1
   numOfLivePlayers: 1000
   scores: 0
+  previousScores: 0
   scoreRequirement: -1
   isCancelPlayerCollision: 0
   isIceRunMode: 0

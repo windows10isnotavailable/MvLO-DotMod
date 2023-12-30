@@ -71,6 +71,9 @@ public class UserNametag : MonoBehaviour {
 
         if (!parent.isIceRunMode)
             text.text += Utils.GetSymbolString($"Sx{parent.stars}");
+        
+        if (parent.isIceRunMode && parent.scoreRequirement < 0)
+            text.text += "<color=#ffffff>None</color>";
 
         if (rainbowName)
             text.color = Utils.GetRainbowColor();

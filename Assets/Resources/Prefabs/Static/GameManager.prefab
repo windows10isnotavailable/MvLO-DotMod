@@ -4001,7 +4001,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 68.55
+  m_fontSize: 76.65
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -5515,6 +5515,7 @@ MonoBehaviour:
   invincibleMusic: {fileID: 11400000, guid: fb397722d9ffbb145a088ac9ce60908c, type: 2}
   megaMushroomMusic: {fileID: 11400000, guid: 3fb519076901a294493ae6e0c10c979b, type: 2}
   iceRunModeMusic: {fileID: 11400000, guid: c80546ee563892c4db26097036e3339c, type: 2}
+  levelType: 0
   levelMinTileX: -30
   levelMinTileY: -12
   levelWidthTile: 50
@@ -5557,6 +5558,7 @@ MonoBehaviour:
   scoreRequirement: 0
   hurryup: 0
   tenSecondCountdown: 0
+  isIceRunMode: 0
   playerCount: 0
   players: []
   enemySpawnpoints: []
