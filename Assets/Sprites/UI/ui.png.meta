@@ -1213,10 +1213,10 @@ TextureImporter:
       name: ui_49
       rect:
         serializedVersion: 2
-        x: 148
-        y: 35
-        width: 16
-        height: 16
+        x: 147
+        y: 33
+        width: 18
+        height: 19
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

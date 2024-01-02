@@ -13782,7 +13782,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36.35
+  m_fontSize: 36.3
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -35266,6 +35266,7 @@ MonoBehaviour:
   - {fileID: 1774958591}
   - {fileID: 978599145}
   - {fileID: 8984563}
+  - {fileID: 8984563}
   - {fileID: 1477183160}
   - {fileID: 1477183160}
   - {fileID: 1477183160}
@@ -35276,6 +35277,7 @@ MonoBehaviour:
   - {fileID: 1673401199}
   - {fileID: 1477183160}
   - {fileID: 927866350}
+  - {fileID: 1774958591}
   sliderText: {fileID: 1514315584}
   lobbyText: {fileID: 465989235}
   currentMaxPlayers: {fileID: 1732849129}
@@ -35376,6 +35378,7 @@ MonoBehaviour:
   - '[C] Desert'
   - '[C] UnderGround'
   - '[C] KoopaIsland'
+  - '[C] TheBlue'
   - '[B] FieldA'
   - '[B] FieldB'
   - '[B] Sumo'
@@ -35386,6 +35389,7 @@ MonoBehaviour:
   - '[B] PipeSumo'
   - '[B] SlopeSumo'
   - '[R] BreakFinger'
+  - '[R] NewBreakFinger'
   debugMaps: []
   colorManager: {fileID: 1983555074}
 --- !u!4 &887693662
@@ -48003,7 +48007,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 47220570}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.5951661
+  m_Size: 0.59497553
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -91106,7 +91110,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1141870934}
   m_HandleRect: {fileID: 1141870933}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

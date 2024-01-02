@@ -79,6 +79,11 @@ public class PlayerAnimationController : MonoBehaviourPun {
         if (gameover)
             models.SetActive(true);
 
+        bool isRunner = controller != null && controller.isIceRunMode && controller.isRunner;
+
+        primaryColor = isRunner ? Color.white : primaryColorAtStart;
+        secondaryColor = isRunner ? IceRunModeUtils.SkinRunnerColor : secondaryColorAtStart;
+
         Vector3 targetEuler = models.transform.eulerAngles;
         bool instant = false, changeFacing = false;
         if (!gameover && !controller.Frozen) {

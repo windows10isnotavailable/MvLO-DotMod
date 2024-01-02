@@ -1211,16 +1211,16 @@ MonoBehaviour:
     sprite: {fileID: 1487520024, guid: 70672da71d9d71a4daaf5f3fc58531e6, type: 3}
   - m_Index: 50
     m_Metrics:
-      m_Width: 16
-      m_Height: 16
+      m_Width: 18
+      m_Height: 19
       m_HorizontalBearingX: -2
-      m_HorizontalBearingY: 16
-      m_HorizontalAdvance: 22
+      m_HorizontalBearingY: 19
+      m_HorizontalAdvance: 26
     m_GlyphRect:
-      m_X: 148
-      m_Y: 35
-      m_Width: 16
-      m_Height: 16
+      m_X: 147
+      m_Y: 33
+      m_Width: 18
+      m_Height: 19
     m_Scale: 1
     m_AtlasIndex: 0
     m_ClassDefinitionType: 0
