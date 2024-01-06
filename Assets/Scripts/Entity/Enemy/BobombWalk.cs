@@ -19,6 +19,8 @@ public class BobombWalk : HoldableEntity {
     public override void Start() {
         base.Start();
 
+        if (photonView && photonView.InstantiationData != null && photonView.InstantiationData.Length > 0 && (photonView.InstantiationData[0] is bool))
+            left = photonView && photonView.InstantiationData != null && (bool)photonView.InstantiationData[0];
         body.velocity = new(walkSpeed * (left ? -1 : 1), body.velocity.y);
     }
 

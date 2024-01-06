@@ -34,6 +34,10 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
     public MusicData mainMusic, invincibleMusic, megaMushroomMusic, iceRunModeMusic;
 
     public Enums.LevelType levelType = Enums.LevelType.Versus;
+    public string rewardFirstClearKeyName = "";
+    public string firstClearMessage = "";
+
+    public Enums.PowerupState initPowerups = Enums.PowerupState.Small;
 
     public int levelMinTileX, levelMinTileY, levelWidthTile, levelHeightTile;
     public float cameraMinY, cameraHeightY, cameraMinX = -1000, cameraMaxX = 1000;
@@ -602,11 +606,14 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
         PhotonNetwork.CurrentRoom.SetCustomProperties(new() { [Enums.NetRoomProperties.GameStarted] = false });
         gameover = true;
         music.Stop();
+
         GameObject text = GameObject.FindWithTag("wintext");
         text.GetComponent<TMP_Text>().text = winner != null ? $"{ winner.GetUniqueNickname() } Wins!" : "It's a draw...";
 
         yield return new WaitForSecondsRealtime(1);
         text.GetComponent<Animator>().SetTrigger("start");
+
+        GameObject firstClearMessageObj = GameObject.FindWithTag("firstClearMessage");
 
         AudioMixer mixer = music.outputAudioMixerGroup.audioMixer;
         mixer.SetFloat("MusicSpeed", 1f);
@@ -618,11 +625,31 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
         secondsUntilMenu = draw ? 5 : 4;
 
         if (draw)
+        {
             music.PlayOneShot(Enums.Sounds.UI_Match_Draw.GetClip());
+        }
         else if (win)
+        {
+            PlayerController winnerController = GetController(winner);
+            bool raceClearFlag = levelType == Enums.LevelType.Race && winnerController != null && !isIceRunMode && winnerController.stars >= starRequirement;
+            if (raceClearFlag && rewardFirstClearKeyName.Length > 0 && !GameState.Instance.IsClear(rewardFirstClearKeyName))
+            {
+                GameState.Instance.IsClearStages[rewardFirstClearKeyName] = true;
+                GameState.Instance.SaveGameStateToPreferences();
+
+                if (firstClearMessage.Length > 0)
+                {
+                    firstClearMessageObj.GetComponent<Animator>().SetTrigger("start");
+                    firstClearMessageObj.GetComponent<TMP_Text>().text = firstClearMessage;
+                }
+            }
             music.PlayOneShot(Enums.Sounds.UI_Match_Win.GetClip());
+        }
         else
+        {
             music.PlayOneShot(Enums.Sounds.UI_Match_Lose.GetClip());
+        }
+
 
         //TOOD: make a results screen?
 

@@ -13782,7 +13782,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36.3
+  m_fontSize: 36.35
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -26631,7 +26631,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.83, y: 0.28}
   m_AnchorMax: {x: 0.93, y: 1}
-  m_AnchoredPosition: {x: 0, y: -1.0000019}
+  m_AnchoredPosition: {x: 0, y: -1}
   m_SizeDelta: {x: 0, y: 1.9999962}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &778236497
@@ -35267,17 +35267,24 @@ MonoBehaviour:
   - {fileID: 978599145}
   - {fileID: 8984563}
   - {fileID: 8984563}
+  - {fileID: 978599145}
   - {fileID: 1477183160}
   - {fileID: 1477183160}
+  - {fileID: 1774958591}
   - {fileID: 1477183160}
   - {fileID: 323530410}
   - {fileID: 1015827595}
+  - {fileID: 1015827595}
+  - {fileID: 8984563}
   - {fileID: 8984563}
   - {fileID: 927866350}
   - {fileID: 1673401199}
   - {fileID: 1477183160}
   - {fileID: 927866350}
+  - {fileID: 978599145}
+  - {fileID: 927866350}
   - {fileID: 1774958591}
+  - {fileID: 1015827595}
   sliderText: {fileID: 1514315584}
   lobbyText: {fileID: 465989235}
   currentMaxPlayers: {fileID: 1732849129}
@@ -35379,17 +35386,24 @@ MonoBehaviour:
   - '[C] UnderGround'
   - '[C] KoopaIsland'
   - '[C] TheBlue'
+  - '[C] CrystalCave'
   - '[B] FieldA'
   - '[B] FieldB'
+  - '[B] FieldC'
   - '[B] Sumo'
   - '[B] IceSumo'
-  - '[B] CastleSumo'
-  - '[B] SkySumo'
+  - '[B] FortressSumoA'
+  - '[B] FortressSumoB'
+  - '[B] SkySumoA'
+  - '[B] SkySumoB'
   - '[B] VolcanoSumo'
   - '[B] PipeSumo'
   - '[B] SlopeSumo'
+  - '[B] BreakFingerSumo'
+  - '[B] GoombaSumo'
   - '[R] BreakFinger'
   - '[R] NewBreakFinger'
+  - '[R] KeepTheMushroom'
   debugMaps: []
   colorManager: {fileID: 1983555074}
 --- !u!4 &887693662
@@ -48007,7 +48021,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 47220570}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.59497553
+  m_Size: 0.5951287
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

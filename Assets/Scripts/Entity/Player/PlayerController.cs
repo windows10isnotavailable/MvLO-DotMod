@@ -455,6 +455,8 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
                 if (photonView.IsMine)
                 {
                     bool deathFlag = false;
+                    bool damageFlag = false;
+
                     switch (go.tag)
                     {
                         case "poison":
@@ -463,10 +465,15 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
                         case "thorn":
                             deathFlag = down >= 1 || left >= 1 | right >= 1 || (!ignoreRoof && up > 1);
                             break;
+                        case "damageThron":
+                            damageFlag = down >= 1 || left >= 1 | right >= 1 || (!ignoreRoof && up > 1);
+                            break;
                     }
 
                     if (deathFlag)
                         photonView.RPC(nameof(Death), RpcTarget.All, false, false);
+                    if (damageFlag)
+                        photonView.RPC(nameof(Powerdown), RpcTarget.All, false);
                 }
             }
         }
@@ -1479,7 +1486,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         gameObject.SetActive(true);
         dead = false;
         spawned = true;
-        state = Enums.PowerupState.Small;
+        state = GameManager.Instance.initPowerups;
         
         if (isIceRunMode)
         {

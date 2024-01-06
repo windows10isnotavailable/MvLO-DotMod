@@ -189,6 +189,7 @@ GameObject:
   - component: {fileID: 1776850482587567143}
   - component: {fileID: 1776850482587567140}
   - component: {fileID: 1776850482587567144}
+  - component: {fileID: -4995846899032889076}
   - component: {fileID: 1776850482587567145}
   - component: {fileID: 4164633649054386327}
   - component: {fileID: 3073743129255606538}
@@ -252,6 +253,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3211edc9ee1951f4780bd104a9fbd597, type: 2}
   - {fileID: 11400000, guid: 245cea6ccab8e0d47a215ef6df104e09, type: 2}
   - {fileID: 11400000, guid: 2ea8c39849fd3704cb659e2d4ef905c3, type: 2}
+  - {fileID: 11400000, guid: 5e43e59d43335b54dbb9c357d1364409, type: 2}
   rainbowGradient:
     serializedVersion: 2
     key0: {r: 1, g: 0.13913044, b: 0.11304349, a: 1}
@@ -315,6 +317,19 @@ MonoBehaviour:
   fourByThreeRatio: 0
   scoreboardAlways: 0
   filter: 1
+--- !u!114 &-4995846899032889076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1776850482587567141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06417f387fcba2745ae4feb06d9ad75c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IsClearKeepTheMushroom: 0
 --- !u!82 &1776850482587567145
 AudioSource:
   m_ObjectHideFlags: 0

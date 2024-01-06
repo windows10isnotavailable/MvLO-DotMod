@@ -4,6 +4,8 @@ using UnityEngine;
 public class PlayerColorSet : ScriptableObject {
 
     public PlayerColors[] colors = { new() };
+    [SerializeField] public string ShowClearStageKeyName = "";
+    [SerializeField] public bool IsHiddenColor = false;
 
     public PlayerColors GetPlayerColors(PlayerData player) {
 

@@ -51,11 +51,17 @@ EditorBuildSettings:
     path: Assets/Scenes/Levels/CustomTheBlue.unity
     guid: ccd493aceda9f694988cbb87d61c8be5
   - enabled: 1
+    path: Assets/Scenes/Levels/CustomCrystalCave.unity
+    guid: 27aaad1bfbc75f7449194fc6ab51d664
+  - enabled: 1
     path: Assets/Scenes/Levels/BattleFieldA.unity
     guid: 95dff6cd36cc12647a0e89305962853e
   - enabled: 1
     path: Assets/Scenes/Levels/BattleFieldB.unity
     guid: 4891b9dac03dfef468455fb49e72af3c
+  - enabled: 1
+    path: Assets/Scenes/Levels/BattleFieldC.unity
+    guid: 330311379486a57429dbefc17034dba2
   - enabled: 1
     path: Assets/Scenes/Levels/BattleSumo.unity
     guid: 96ce6737754bea14a92e4d802ad6de1d
@@ -63,11 +69,17 @@ EditorBuildSettings:
     path: Assets/Scenes/Levels/BattleIceSumo.unity
     guid: f22fb57a2738ca44a80fd825050c58d5
   - enabled: 1
-    path: Assets/Scenes/Levels/BattleCastleSumo.unity
+    path: Assets/Scenes/Levels/BattleCastleSumoA.unity
     guid: 4a6a932ab396f1a4db62a99654bcfa2b
   - enabled: 1
-    path: Assets/Scenes/Levels/BattleSkySumo.unity
+    path: Assets/Scenes/Levels/BattleCastleSumoB.unity
+    guid: 45ee75d93e0a4334a85e05b074181e89
+  - enabled: 1
+    path: Assets/Scenes/Levels/BattleSkySumoA.unity
     guid: dd105c9d767616046a72fdaf4b130f09
+  - enabled: 1
+    path: Assets/Scenes/Levels/BattleSkySumoB.unity
+    guid: ad88f4c622f8e1a419f8ce0bfd8780f0
   - enabled: 1
     path: Assets/Scenes/Levels/BattleVolcanoSumo.unity
     guid: b9eb5b1f0e5def2449c244bae75da9f3
@@ -78,11 +90,20 @@ EditorBuildSettings:
     path: Assets/Scenes/Levels/BattleSlopeSumo.unity
     guid: e74c4cd5ad4e883448f316cb6f2faecc
   - enabled: 1
+    path: Assets/Scenes/Levels/BattleBreakFingerSumo.unity
+    guid: f1624acff8757be4f81a5a7a7611f5ba
+  - enabled: 1
+    path: Assets/Scenes/Levels/BattleGoombaSumo.unity
+    guid: 54d85ee27b9619c4ebdc52b32c854ccf
+  - enabled: 1
     path: Assets/Scenes/Levels/RaceBreakFinger.unity
     guid: 071761f1dbd4d5c4eaf97ccf41ad3836
   - enabled: 1
     path: Assets/Scenes/Levels/RaceNewBreakFinger.unity
     guid: 94582c7ed4be42840a8fdae80219b3c3
+  - enabled: 1
+    path: Assets/Scenes/Levels/RaceKeepTheMushroom.unity
+    guid: 2f0dcd214cceea74da58c8bd28539449
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 49335f30d253220488d2d332ade6e901,
       type: 2}

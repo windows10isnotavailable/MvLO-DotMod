@@ -8,6 +8,8 @@ public class GoombaWalk : KillableEntity {
     public new void Start() {
         base.Start();
         body.velocity = new Vector2(speed * (left ? -1 : 1), body.velocity.y);
+        if (photonView && photonView.InstantiationData != null && photonView.InstantiationData.Length > 0 && (photonView.InstantiationData[0] is bool))
+            left = photonView && photonView.InstantiationData != null && (bool)photonView.InstantiationData[0];
         animator.SetBool("dead", false);
     }
 

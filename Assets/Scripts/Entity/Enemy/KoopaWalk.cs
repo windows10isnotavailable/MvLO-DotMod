@@ -24,6 +24,8 @@ public class KoopaWalk : HoldableEntity {
         base.Start();
         hitbox = transform.GetChild(0).GetComponent<BoxCollider2D>();
         worldHitbox = GetComponent<BoxCollider2D>();
+        if (photonView && photonView.InstantiationData != null && photonView.InstantiationData.Length > 0 && (photonView.InstantiationData[0] is bool))
+            left = photonView && photonView.InstantiationData != null && (bool)photonView.InstantiationData[0];
 
         body.velocity = new Vector2(-walkSpeed, 0);
     }

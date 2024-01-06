@@ -36,8 +36,12 @@ public class ColorChooser : MonoBehaviour, KeepChildInFocus.IFocusIgnore {
             newButton.name = color?.name ?? "Reset";
             if (color == null)
                 b.image.sprite = clearSprite;
-
+            
             newButton.SetActive(true);
+
+            if (color != null && color.IsHiddenColor && color.ShowClearStageKeyName.Length > 0)
+                newButton.SetActive(GameState.Instance.IsClear(color.ShowClearStageKeyName));
+
             buttons.Add(b);
 
             Navigation navigation = new() { mode = Navigation.Mode.Explicit };
