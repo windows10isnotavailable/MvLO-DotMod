@@ -35275,6 +35275,7 @@ MonoBehaviour:
   - {fileID: 323530410}
   - {fileID: 1015827595}
   - {fileID: 1015827595}
+  - {fileID: 1015827595}
   - {fileID: 8984563}
   - {fileID: 8984563}
   - {fileID: 927866350}
@@ -35394,6 +35395,7 @@ MonoBehaviour:
   - '[B] IceSumo'
   - '[B] FortressSumoA'
   - '[B] FortressSumoB'
+  - '[B] FortressSumoC'
   - '[B] SkySumoA'
   - '[B] SkySumoB'
   - '[B] VolcanoSumo'

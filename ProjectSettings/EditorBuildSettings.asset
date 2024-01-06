@@ -73,6 +73,9 @@ EditorBuildSettings:
     guid: 4a6a932ab396f1a4db62a99654bcfa2b
   - enabled: 1
     path: Assets/Scenes/Levels/BattleCastleSumoB.unity
+    guid: f0b4b57aa4bcb1948a16c21e90f14bd7
+  - enabled: 1
+    path: Assets/Scenes/Levels/BattleCastleSumoC.unity
     guid: 45ee75d93e0a4334a85e05b074181e89
   - enabled: 1
     path: Assets/Scenes/Levels/BattleSkySumoA.unity
