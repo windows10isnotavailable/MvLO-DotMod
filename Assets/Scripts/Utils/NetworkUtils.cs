@@ -22,8 +22,10 @@ namespace NSMB.Utils {
         public static RaiseEventOptions EventAll { get; } = new() { Receivers = ReceiverGroup.All };
         public static RaiseEventOptions EventMasterClient { get; } = new() { Receivers = ReceiverGroup.MasterClient };
 
-        private readonly static Hashtable _defaultRoomProperties = new() {
+        private readonly static Hashtable _defaultRoomProperties = new()
+        {
             [Enums.NetRoomProperties.Level] = 0,
+            [Enums.NetRoomProperties.InitPowerups] = 0,
             [Enums.NetRoomProperties.StarRequirement] = 10,
             [Enums.NetRoomProperties.CoinRequirement] = 8,
             [Enums.NetRoomProperties.ScoreRequirement] = -1,

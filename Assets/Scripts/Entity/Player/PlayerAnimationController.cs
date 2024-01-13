@@ -40,6 +40,11 @@ public class PlayerAnimationController : MonoBehaviourPun {
     float blinkTimer, pipeTimer, deathTimer, propellerVelocity;
     public bool deathUp, wasTurnaround, enableGlow;
 
+    private bool IsHidePlayer()
+    {
+        return controller != null && photonView != null && !controller.isIceRunMode && !photonView.IsMine && GameManager.Instance.levelType == Enums.LevelType.Race && Settings.Instance.hidePlayerInRaceLevel;
+    }
+
     public void Start() {
         controller = GetComponent<PlayerController>();
         animator = GetComponent<Animator>();
@@ -51,7 +56,8 @@ public class PlayerAnimationController : MonoBehaviourPun {
 
         if (photonView) {
             enableGlow = !photonView.IsMine;
-            if (!photonView.IsMine)
+
+            if (!photonView.IsMine && !IsHidePlayer())
                 GameManager.Instance.CreateNametag(controller);
 
             PlayerColorSet colorSet = GlobalController.Instance.skins[(int) photonView.Owner.CustomProperties[Enums.NetPlayerProperties.PlayerColor]];
@@ -71,6 +77,9 @@ public class PlayerAnimationController : MonoBehaviourPun {
             renderers.AddRange(GetComponentsInChildren<MeshRenderer>(true));
             renderers.AddRange(GetComponentsInChildren<SkinnedMeshRenderer>(true));
         }
+
+        if (IsHidePlayer())
+            models.SetActive(false);
     }
 
     public void HandleAnimations() {

@@ -27,10 +27,10 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
     public GameObject title, bg, mainMenu, optionsMenu, lobbyMenu, createLobbyPrompt, inLobbyMenu, creditsMenu, controlsMenu, privatePrompt, updateBox;
     public GameObject[] levelCameraPositions;
     public GameObject sliderText, lobbyText, currentMaxPlayers, settingsPanel;
-    public TMP_Dropdown levelDropdown, characterDropdown;
+    public TMP_Dropdown levelDropdown, characterDropdown, initPowerupsDropdown;
     public RoomIcon selectedRoomIcon, privateJoinRoom;
     public Button joinRoomBtn, createRoomBtn, startGameBtn;
-    public Toggle ndsResolutionToggle, fullscreenToggle, livesEnabled, powerupsEnabled, iceRunModeEnabled, scoreModeEnabled, friendlyFireEnabled, timeEnabled, drawTimeupToggle, fireballToggle, vsyncToggle, privateToggle, privateToggleRoom, aspectToggle, spectateToggle, scoreboardToggle, filterToggle;
+    public Toggle ndsResolutionToggle, fullscreenToggle, livesEnabled, powerupsEnabled, iceRunModeEnabled, scoreModeEnabled, friendlyFireEnabled, timeEnabled, drawTimeupToggle, fireballToggle, vsyncToggle, privateToggle, privateToggleRoom, aspectToggle, spectateToggle, scoreboardToggle, filterToggle, hidePlayerInRaceLevelToggle;
     public GameObject playersContent, playersPrefab, chatContent, chatPrefab;
     public TMP_InputField nicknameField, starsText, coinsText, livesField, timeField, scoresField, lobbyJoinField, chatTextField;
     public Slider musicSlider, sfxSlider, masterSlider, lobbyPlayersSlider, changePlayersSlider;
@@ -54,6 +54,7 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
     public Selectable[] roomSettings;
 
     public List<string> maps, debugMaps;
+    public List<string> powerups;
 
     private bool pingsReceived, joinedLate;
     private List<string> formattedRegions;
@@ -212,6 +213,7 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
 
         AttemptToUpdateProperty<bool>(updatedProperties, Enums.NetRoomProperties.Debug, ChangeDebugState);
         AttemptToUpdateProperty<int>(updatedProperties, Enums.NetRoomProperties.Level, ChangeLevel);
+        AttemptToUpdateProperty<int>(updatedProperties, Enums.NetRoomProperties.InitPowerups, ChangeInitPowerups);
         AttemptToUpdateProperty<int>(updatedProperties, Enums.NetRoomProperties.StarRequirement, ChangeStarRequirement);
         AttemptToUpdateProperty<int>(updatedProperties, Enums.NetRoomProperties.CoinRequirement, ChangeCoinRequirement);
         AttemptToUpdateProperty<int>(updatedProperties, Enums.NetRoomProperties.Lives, ChangeLives);
@@ -433,6 +435,7 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
 
         Camera.main.transform.position = levelCameraPositions[Random.Range(0, maps.Count)].transform.position;
         levelDropdown.AddOptions(maps);
+        initPowerupsDropdown.AddOptions(powerups);
         LoadSettings(!PhotonNetwork.InRoom);
 
         //Photon stuff.
@@ -527,6 +530,7 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         vsyncToggle.isOn = Settings.Instance.vsync;
         scoreboardToggle.isOn = Settings.Instance.scoreboardAlways;
         filterToggle.isOn = Settings.Instance.filter;
+        hidePlayerInRaceLevelToggle.isOn = Settings.Instance.hidePlayerInRaceLevel;
         QualitySettings.vSyncCount = Settings.Instance.vsync ? 1 : 0;
     }
 
@@ -911,7 +915,8 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         PhotonNetwork.CurrentRoom.SetCustomProperties(properties);
     }
 
-    public void ChangeLevel(int index) {
+    public void ChangeLevel(int index)
+    {
         levelDropdown.SetValueWithoutNotify(index);
         LocalChatMessage("Map set to: " + levelDropdown.options[index].text, Color.red);
         Camera.main.transform.position = levelCameraPositions[index].transform.position;
@@ -928,6 +933,25 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
 
         Hashtable table = new() {
             [Enums.NetRoomProperties.Level] = levelDropdown.value
+        };
+        PhotonNetwork.CurrentRoom.SetCustomProperties(table);
+    }
+    public void ChangeInitPowerups(int index)
+    {
+        initPowerupsDropdown.SetValueWithoutNotify(index);
+    }
+    public void SetInitPowerups()
+    {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        int newInitPowerupsIndex = initPowerupsDropdown.value;
+        if (newInitPowerupsIndex == (int)PhotonNetwork.CurrentRoom.CustomProperties[Enums.NetRoomProperties.InitPowerups])
+            return;
+
+        Hashtable table = new()
+        {
+            [Enums.NetRoomProperties.InitPowerups] = initPowerupsDropdown.value
         };
         PhotonNetwork.CurrentRoom.SetCustomProperties(table);
     }

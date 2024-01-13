@@ -24,6 +24,7 @@ public abstract class KillableEntity : MonoBehaviourPun, IFreezableEntity, ICust
     public bool IsFlying => flying;
     public bool Active { get; set; } = true;
 
+    public bool IsSpawnLooseCoin = true;
     public bool dead, left = true, collide = true, iceCarryable = true, flying;
     public Rigidbody2D body;
     public BoxCollider2D hitbox;
@@ -34,6 +35,8 @@ public abstract class KillableEntity : MonoBehaviourPun, IFreezableEntity, ICust
 
     private byte previousFlags;
     private double lastSendTimestamp;
+
+    protected bool IsCancelMove = false;
 
     #region Pun Serialization
     public void Serialize(List<byte> buffer) {
@@ -65,6 +68,17 @@ public abstract class KillableEntity : MonoBehaviourPun, IFreezableEntity, ICust
         audioSource = GetComponent<AudioSource>();
         sRenderer = GetComponent<SpriteRenderer>();
         physics = GetComponent<PhysicsEntity>();
+
+
+        if (photonView && photonView.InstantiationData != null)
+        {
+            if (photonView.InstantiationData.Length >= 1 && (photonView.InstantiationData[0] is bool))
+                left = (bool)photonView.InstantiationData[0];
+            if (photonView.InstantiationData.Length >= 2 && (photonView.InstantiationData[1] is bool))
+                IsSpawnLooseCoin = (bool)photonView.InstantiationData[1];
+            if (photonView.InstantiationData.Length >= 3 && (photonView.InstantiationData[2] is bool))
+                IsCancelMove = (bool)photonView.InstantiationData[2];
+        }
     }
 
     public virtual void FixedUpdate() {
@@ -187,7 +201,7 @@ public abstract class KillableEntity : MonoBehaviourPun, IFreezableEntity, ICust
         if (groundpound)
             Instantiate(Resources.Load("Prefabs/Particle/EnemySpecialKill"), body.position + Vector2.up * 0.5f, Quaternion.identity);
 
-        if (PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsMasterClient && IsSpawnLooseCoin)
             PhotonNetwork.InstantiateRoomObject("Prefabs/LooseCoin", body.position + Vector2.up * 0.5f, Quaternion.identity);
 
         body.velocity = new(2f * (right ? 1 : -1), 2.5f);

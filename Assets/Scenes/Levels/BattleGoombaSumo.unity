@@ -863,6 +863,11 @@ PrefabInstance:
       propertyPath: autoDirection
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5767672361248389777, guid: a0b798eab3d5bad48835d0de1b044d6d,
+        type: 3}
+      propertyPath: IsSpawnLooseCoin
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: a0b798eab3d5bad48835d0de1b044d6d, type: 3}
@@ -3341,6 +3346,11 @@ PrefabInstance:
         type: 3}
       propertyPath: autoDirection
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5767672361248389777, guid: a0b798eab3d5bad48835d0de1b044d6d,
+        type: 3}
+      propertyPath: IsSpawnLooseCoin
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []

@@ -39,6 +39,13 @@ public static class Enums {
     }
     #endregion
 
+    #region LEVEL SPECIAL
+    public enum LevelSpecial
+    {
+        RespawnLevelWhenDeathPlayer,
+    }
+    #endregion
+
     #region ANIMATION & MUSIC
     // Animation enums
     public enum PlayerEyeState {
@@ -184,6 +191,7 @@ public static class Enums {
     }
     public static class NetRoomProperties {
         public static string Level { get; } = "L";
+        public static string InitPowerups { get; } = "In";
         public static string StarRequirement { get; } = "S";
         public static string CoinRequirement { get; } = "Co";
         public static string ScoreRequirement { get; } = "Sco";

@@ -13,6 +13,9 @@ public class EntitySpawner : MonoBehaviourPun {
     public bool left = false;
     public bool autoDirection = false;
 
+    public bool IsSpawnLooseCoin = false;
+    public bool IsCancelMove = false;
+
     private float spawnTimer;
     private readonly List<GameObject> entities = new();
 
@@ -48,7 +51,7 @@ public class EntitySpawner : MonoBehaviourPun {
         bool playerLeft = IntersectsPlayer((Vector2)transform.position - searchOffset, searchBox);
         bool direction = autoDirection ? playerLeft : left;
 
-        GameObject newEntity = PhotonNetwork.InstantiateRoomObject(spawnObject, transform.position, Quaternion.identity, 0, new object[] { direction });
+        GameObject newEntity = PhotonNetwork.InstantiateRoomObject(spawnObject, transform.position, Quaternion.identity, 0, new object[] { direction, IsSpawnLooseCoin, IsCancelMove });
         entities.Add(newEntity);
 
     }

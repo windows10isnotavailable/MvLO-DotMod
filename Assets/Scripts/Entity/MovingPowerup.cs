@@ -31,6 +31,12 @@ public class MovingPowerup : MonoBehaviourPun {
 
         originalLayer = sRenderer.sortingOrder;
 
+        if (photonView && photonView.InstantiationData != null)
+        {
+            if (photonView.InstantiationData.Length >= 1 && (photonView.InstantiationData[0] is bool))
+                right = !((bool)photonView.InstantiationData[0]);
+        }
+
         if (groundMask == -1) {
             groundMask = LayerMask.GetMask("Ground", "PassthroughInvalid");
             HITS_NOTHING_LAYERID = LayerMask.NameToLayer("HitsNothing");

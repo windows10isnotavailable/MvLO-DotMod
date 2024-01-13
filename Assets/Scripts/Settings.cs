@@ -34,6 +34,7 @@ public class Settings : Singleton<Settings> {
     public int character, skin;
     public bool ndsResolution = false, fireballFromSprint = true, vsync = false, fourByThreeRatio = false;
     public bool scoreboardAlways = false, filter = true;
+    public bool hidePlayerInRaceLevel = false;
 
     public void Awake() {
         if (!InstanceCheck())
@@ -60,6 +61,7 @@ public class Settings : Singleton<Settings> {
         filter = PlayerPrefs.GetInt("ChatFilter", 1) == 1;
         character = PlayerPrefs.GetInt("Character", 0);
         skin = PlayerPrefs.GetInt("Skin", 0);
+        hidePlayerInRaceLevel = PlayerPrefs.GetInt("DotMod-S-HidePlayerInRaceLevel", 0) == 1;
     }
     public void SaveSettingsToPreferences() {
         PlayerPrefs.SetString("Nickname", Regex.Replace(PhotonNetwork.NickName, "\\(\\d*\\)", ""));
@@ -74,6 +76,7 @@ public class Settings : Singleton<Settings> {
         PlayerPrefs.SetInt("ChatFilter", filter ? 1 : 0);
         PlayerPrefs.SetInt("Character", character);
         PlayerPrefs.SetInt("Skin", skin);
+        PlayerPrefs.SetInt("DotMod-S-HidePlayerInRaceLevel", hidePlayerInRaceLevel ? 1 : 0);
         PlayerPrefs.Save();
     }
 

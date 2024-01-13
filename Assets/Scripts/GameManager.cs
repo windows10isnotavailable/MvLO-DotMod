@@ -34,6 +34,8 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
     public MusicData mainMusic, invincibleMusic, megaMushroomMusic, iceRunModeMusic;
 
     public Enums.LevelType levelType = Enums.LevelType.Versus;
+    public List<Enums.LevelSpecial> levelSpecials = new();
+    public HashSet<Enums.LevelSpecial> levelSpecialSets = new();
     public string rewardFirstClearKeyName = "";
     public string firstClearMessage = "";
 
@@ -428,6 +430,8 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
 
     public void Awake() {
         Instance = this;
+
+        levelSpecialSets = levelSpecials.ToHashSet();
     }
 
     public void Start() {
@@ -958,7 +962,8 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
 
 
     public float size = 1.39f, ySize = 0.8f;
-    public Vector3 GetSpawnpoint(int playerIndex, int players = -1) {
+    public Vector3 GetSpawnpoint(int playerIndex, int players = -1)
+    {
         if (players <= -1)
             players = playerCount;
         if (players == 0)

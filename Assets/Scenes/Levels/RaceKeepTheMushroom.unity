@@ -15660,6 +15660,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5500062339093502114, guid: 43d56bd18d06e9b4abe323618a20a228,
         type: 3}
+      propertyPath: size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5500062339093502114, guid: 43d56bd18d06e9b4abe323618a20a228,
+        type: 3}
       propertyPath: tilemap
       value: 
       objectReference: {fileID: 643464986}
@@ -15784,6 +15789,16 @@ PrefabInstance:
         type: 3}
       propertyPath: rewardFirstClearKeyName
       value: KeepTheMushroom
+      objectReference: {fileID: 0}
+    - target: {fileID: 5500062339093502114, guid: 43d56bd18d06e9b4abe323618a20a228,
+        type: 3}
+      propertyPath: levelSpecials.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5500062339093502114, guid: 43d56bd18d06e9b4abe323618a20a228,
+        type: 3}
+      propertyPath: levelSpecials.Array.data[0]
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5500062339093502118, guid: 43d56bd18d06e9b4abe323618a20a228,
         type: 3}
@@ -16571,6 +16586,11 @@ PrefabInstance:
         type: 3}
       propertyPath: maxSpawnCount
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5767672361248389777, guid: a0b798eab3d5bad48835d0de1b044d6d,
+        type: 3}
+      propertyPath: IsSpawnLooseCoin
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5767672361248389777, guid: a0b798eab3d5bad48835d0de1b044d6d,
         type: 3}
