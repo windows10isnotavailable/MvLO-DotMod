@@ -24,14 +24,14 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
     public GameObject lobbiesContent, lobbyPrefab;
     bool quit, validName;
     public GameObject connecting;
-    public GameObject title, bg, mainMenu, optionsMenu, lobbyMenu, createLobbyPrompt, inLobbyMenu, creditsMenu, controlsMenu, privatePrompt, updateBox;
+    public GameObject title, bg, mainMenu, optionsMenu, lobbyMenu, createLobbyPrompt, selectMapBox, inLobbyMenu, creditsMenu, controlsMenu, privatePrompt, updateBox;
     public GameObject[] levelCameraPositions;
     public GameObject sliderText, lobbyText, currentMaxPlayers, settingsPanel;
     public TMP_Dropdown levelDropdown, characterDropdown, initPowerupsDropdown;
     public RoomIcon selectedRoomIcon, privateJoinRoom;
     public Button joinRoomBtn, createRoomBtn, startGameBtn;
     public Toggle ndsResolutionToggle, fullscreenToggle, livesEnabled, powerupsEnabled, iceRunModeEnabled, scoreModeEnabled, friendlyFireEnabled, timeEnabled, drawTimeupToggle, fireballToggle, vsyncToggle, privateToggle, privateToggleRoom, aspectToggle, spectateToggle, scoreboardToggle, filterToggle, hidePlayerInRaceLevelToggle;
-    public GameObject playersContent, playersPrefab, chatContent, chatPrefab;
+    public GameObject playersContent, playersPrefab, chatContent, chatPrefab, mapButtonPrefab, versusContent, battleContent, raceContent;
     public TMP_InputField nicknameField, starsText, coinsText, livesField, timeField, scoresField, lobbyJoinField, chatTextField;
     public Slider musicSlider, sfxSlider, masterSlider, lobbyPlayersSlider, changePlayersSlider;
     public GameObject mainMenuSelected, optionsSelected, lobbySelected, currentLobbySelected, createLobbySelected, creditsSelected, controlsSelected, privateSelected, reconnectSelected, updateBoxSelected;
@@ -43,6 +43,8 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
     public string connectThroughSecret = "";
     public string selectedRoom;
     public bool askedToJoin;
+
+    public GameObject mapSelectButton, selectMapBoxCancelButton;
 
     public bool previousStartGameBtnInteractable;
 
@@ -435,6 +437,29 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
 
         Camera.main.transform.position = levelCameraPositions[Random.Range(0, maps.Count)].transform.position;
         levelDropdown.AddOptions(maps);
+
+        for (int i = 0; i < maps.Count; i++)
+        {
+            string map = maps[i];
+
+            int index = i;
+
+            GameObject button = Instantiate(mapButtonPrefab, Vector3.zero, Quaternion.identity);
+            button.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = map;
+            button.GetComponent<Button>().onClick.AddListener(() => SetLevelIndex(index));
+            button.SetActive(true);
+
+            var content = versusContent;
+            
+            if (map.Contains("[B]")) content = battleContent;
+            else if(map.Contains("[R]")) content = raceContent;
+
+            button.transform.SetParent(content.transform, false);
+        }
+
+        if (maps.Count > 0)
+            mapSelectButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = maps[0];
+
         initPowerupsDropdown.AddOptions(powerups);
         LoadSettings(!PhotonNetwork.InRoom);
 
@@ -627,6 +652,7 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         controlsMenu.SetActive(false);
         lobbyMenu.SetActive(false);
         createLobbyPrompt.SetActive(false);
+        selectMapBox.SetActive(false);
         inLobbyMenu.SetActive(false);
         creditsMenu.SetActive(false);
         privatePrompt.SetActive(false);
@@ -641,6 +667,7 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         controlsMenu.SetActive(false);
         lobbyMenu.SetActive(false);
         createLobbyPrompt.SetActive(false);
+        selectMapBox.SetActive(false);
         inLobbyMenu.SetActive(false);
         creditsMenu.SetActive(false);
         privatePrompt.SetActive(false);
@@ -657,6 +684,7 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         controlsMenu.SetActive(false);
         lobbyMenu.SetActive(true);
         createLobbyPrompt.SetActive(false);
+        selectMapBox.SetActive(false);
         inLobbyMenu.SetActive(false);
         creditsMenu.SetActive(false);
         privatePrompt.SetActive(false);
@@ -674,6 +702,7 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         controlsMenu.SetActive(false);
         lobbyMenu.SetActive(true);
         createLobbyPrompt.SetActive(true);
+        selectMapBox.SetActive(false);
         inLobbyMenu.SetActive(false);
         creditsMenu.SetActive(false);
         privatePrompt.SetActive(false);
@@ -690,6 +719,7 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         controlsMenu.SetActive(false);
         lobbyMenu.SetActive(false);
         createLobbyPrompt.SetActive(false);
+        selectMapBox.SetActive(false);
         inLobbyMenu.SetActive(false);
         creditsMenu.SetActive(false);
         privatePrompt.SetActive(false);
@@ -704,6 +734,7 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         controlsMenu.SetActive(true);
         lobbyMenu.SetActive(false);
         createLobbyPrompt.SetActive(false);
+        selectMapBox.SetActive(false);
         inLobbyMenu.SetActive(false);
         creditsMenu.SetActive(false);
         privatePrompt.SetActive(false);
@@ -718,6 +749,7 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         controlsMenu.SetActive(false);
         lobbyMenu.SetActive(false);
         createLobbyPrompt.SetActive(false);
+        selectMapBox.SetActive(false);
         inLobbyMenu.SetActive(false);
         creditsMenu.SetActive(true);
         privatePrompt.SetActive(false);
@@ -732,11 +764,24 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         controlsMenu.SetActive(false);
         lobbyMenu.SetActive(false);
         createLobbyPrompt.SetActive(false);
+        selectMapBox.SetActive(false);
         inLobbyMenu.SetActive(true);
         creditsMenu.SetActive(false);
         privatePrompt.SetActive(false);
 
         EventSystem.current.SetSelectedGameObject(currentLobbySelected);
+    }
+    public void OpenSelectMapBox()
+    {
+        selectMapBox.SetActive(true);
+
+        EventSystem.current.SetSelectedGameObject(selectMapBoxCancelButton);
+    }
+    public void CloseSelectMapBox()
+    {
+        selectMapBox.SetActive(false);
+
+        EventSystem.current.SetSelectedGameObject(mapSelectButton);
     }
     public void OpenPrivatePrompt() {
         privatePrompt.SetActive(true);
@@ -917,24 +962,28 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
 
     public void ChangeLevel(int index)
     {
-        levelDropdown.SetValueWithoutNotify(index);
+        mapSelectButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = maps[index];
         LocalChatMessage("Map set to: " + levelDropdown.options[index].text, Color.red);
         Camera.main.transform.position = levelCameraPositions[index].transform.position;
     }
-    public void SetLevelIndex() {
+    public void SetLevelIndex(int index) {
         if (!PhotonNetwork.IsMasterClient)
             return;
 
-        int newLevelIndex = levelDropdown.value;
+        //int newLevelIndex = levelDropdown.value;
+        int newLevelIndex = index;
         if (newLevelIndex == (int) PhotonNetwork.CurrentRoom.CustomProperties[Enums.NetRoomProperties.Level])
             return;
 
         //ChangeLevel(newLevelIndex);
 
-        Hashtable table = new() {
-            [Enums.NetRoomProperties.Level] = levelDropdown.value
+        Hashtable table = new()
+        {
+            [Enums.NetRoomProperties.Level] = index
+            //[Enums.NetRoomProperties.Level] = levelDropdown.value
         };
         PhotonNetwork.CurrentRoom.SetCustomProperties(table);
+        CloseSelectMapBox();
     }
     public void ChangeInitPowerups(int index)
     {
