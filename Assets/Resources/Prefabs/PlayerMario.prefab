@@ -10357,6 +10357,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 984b6c8bdb2dc4a419d0cd6be4254d4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gpCancelTimingStateStr: None
+  gpStartTimingStateStr: None
+  gpCounter: 0
   playerId: -1
   dead: 0
   spawned: 0
@@ -10432,6 +10435,7 @@ MonoBehaviour:
   landing: 0
   koyoteTime: 0
   groundpoundCounter: 0
+  groundpoundCounterStart: 0
   groundpoundStartTimer: 0
   pickupTimer: 0
   groundpoundDelay: 0

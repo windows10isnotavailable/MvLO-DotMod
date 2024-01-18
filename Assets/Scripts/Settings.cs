@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -35,6 +36,9 @@ public class Settings : Singleton<Settings> {
     public bool ndsResolution = false, fireballFromSprint = true, vsync = false, fourByThreeRatio = false;
     public bool scoreboardAlways = false, filter = true;
     public bool hidePlayerInRaceLevel = false;
+    public bool practiceModeGP = false;
+
+    public HashSet<int> hideMaps = new();
 
     public void Awake() {
         if (!InstanceCheck())
@@ -62,6 +66,11 @@ public class Settings : Singleton<Settings> {
         character = PlayerPrefs.GetInt("Character", 0);
         skin = PlayerPrefs.GetInt("Skin", 0);
         hidePlayerInRaceLevel = PlayerPrefs.GetInt("DotMod-S-HidePlayerInRaceLevel", 0) == 1;
+        practiceModeGP = PlayerPrefs.GetInt("DotMod-S-PracticeMode", 0) == 1;
+        string _hideMaps = PlayerPrefs.GetString("DotMod-S-HideMaps", "");
+
+        foreach (string stringI in _hideMaps.Split(","))
+            hideMaps.Add(int.Parse(stringI));
     }
     public void SaveSettingsToPreferences() {
         PlayerPrefs.SetString("Nickname", Regex.Replace(PhotonNetwork.NickName, "\\(\\d*\\)", ""));
@@ -77,6 +86,10 @@ public class Settings : Singleton<Settings> {
         PlayerPrefs.SetInt("Character", character);
         PlayerPrefs.SetInt("Skin", skin);
         PlayerPrefs.SetInt("DotMod-S-HidePlayerInRaceLevel", hidePlayerInRaceLevel ? 1 : 0);
+        PlayerPrefs.SetInt("DotMod-S-PracticeMode", practiceModeGP ? 1 : 0);
+
+        PlayerPrefs.SetString("DotMod-S-HideMaps", string.Join(",", hideMaps));
+
         PlayerPrefs.Save();
     }
 

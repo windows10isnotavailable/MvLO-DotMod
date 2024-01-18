@@ -8,6 +8,7 @@ namespace NSMB.Utils
 
     public static class IceRunModeUtils
     {
+        public static Color HideButtonColor = new Color(0.6f, 0.6f, 0.6f, 1f);
         public static Color SkinRunnerColor = new Color(0.5f, 0.5f, 0.5f, 1f);
         public static Color ScoreboardRunnerColor = new Color(1f, 1f, 1f, 0.5f);
 

@@ -21,6 +21,17 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
     private byte previousFlags2;
     private double lastSendTimestamp;
 
+    public string gpCancelTimingStateStr = "None";
+    public string gpStartTimingStateStr = "None";
+
+    public int gpCounter = 0;
+
+    public Dictionary<string, int> gpCancelFailedCount, gpStartFailedCount;
+
+    private bool gpCancelEarlyFlag = false;
+    private bool firstGP = true;
+    private bool nowCountingStartGP = false;
+
     // == MONOBEHAVIOURS ==
 
     public int playerId = -1;
@@ -43,7 +54,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
     public PlayerAnimationController AnimationController { get; private set; }
 
     public bool onGround, previousOnGround, crushGround, doGroundSnap, jumping, properJump, hitRoof, skidding, turnaround, facingRight = true, singlejump, doublejump, triplejump, bounce, crouching, groundpound, groundpoundLastFrame, sliding, knockback, hitBlock, running, functionallyRunning, jumpHeld, flying, drill, inShell, hitLeft, hitRight, stuckInBlock, alreadyStuckInBlock, propeller, usedPropellerThisJump, stationaryGiantEnd, fireballKnockback, startedSliding, canShootProjectile;
-    public float jumpLandingTimer, landing, koyoteTime, groundpoundCounter, groundpoundStartTimer, pickupTimer, groundpoundDelay, hitInvincibilityCounter, powerupFlash, throwInvincibility, jumpBuffer, giantStartTimer, giantEndTimer, propellerTimer, propellerSpinTimer, fireballTimer;
+    public float jumpLandingTimer, landing, koyoteTime, groundpoundCounter, groundpoundCounterStart, groundpoundStartTimer, pickupTimer, groundpoundDelay, hitInvincibilityCounter, powerupFlash, throwInvincibility, jumpBuffer, giantStartTimer, giantEndTimer, propellerTimer, propellerSpinTimer, fireballTimer;
     public float invincible, giantTimer, floorAngle, knockbackTimer, pipeTimer, slowdownTimer, scoreTimer;
 
     //MOVEMENT STAGES
@@ -272,6 +283,20 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
 
         initLives = lives;
 
+        gpCounter = 0;
+        firstGP = true;
+        nowCountingStartGP = false;
+
+        gpCancelFailedCount = new()
+        {
+            ["early"] = 0,
+            ["late"] = 0,
+        };
+        gpStartFailedCount = new()
+        {
+            ["late"] = 0,
+        };
+
         if (photonView.IsMine) {
             InputSystem.controls.Player.Movement.performed += OnMovement;
             InputSystem.controls.Player.Movement.canceled += OnMovement;
@@ -488,6 +513,8 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         hitLeft = left >= 1;
         hitRight = right >= 1;
         hitRoof = !ignoreRoof && up > 1;
+
+        if (onGround) gpCounter = 0;
     }
     void HandleTileProperties() {
         onIce = false;
@@ -1499,7 +1526,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         dead = false;
         spawned = true;
         state = GameManager.Instance.initPowerups;
-        if (state == Enums.PowerupState.Small && initPowerups != Enums.PowerupState.Small)
+        if (state == Enums.PowerupState.Small && initPowerups != Enums.PowerupState.Small && GameManager.Instance.levelType != Enums.LevelType.Race)
         {
             state = initPowerups;
         }
@@ -1878,9 +1905,38 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
                     }
                 }
             }
-            if (up && groundpoundCounter <= 0.05f) {
-                groundpound = false;
-                body.velocity = Vector2.down * groundpoundVelocity;
+            if (up)
+            {
+                if (groundpoundCounter <= 0.05f)
+                {
+                    gpCounter++;
+                    if (gpCounter >= 2)
+                    {
+                        string text = "Best";
+                        if (groundpoundCounter <= 0.025f) text = "Good";
+                        if (groundpoundCounter <= 0)
+                        {
+                            gpCancelFailedCount["late"] += 1;
+                            text = "Late";
+                        }
+                        gpCancelTimingStateStr = text;
+                    }
+
+                    gpCancelEarlyFlag = false;
+                    groundpound = false;
+                    body.velocity = Vector2.down * groundpoundVelocity;
+                    nowCountingStartGP = false;
+                }
+                else
+                {
+                    gpCancelEarlyFlag = true;
+                }
+            } else if (gpCancelEarlyFlag)
+            {
+                gpCancelFailedCount["early"] += 1;
+                gpCancelTimingStateStr = "Early";
+
+                gpCancelEarlyFlag = false;
             }
         }
         if (!((facingRight && hitRight) || (!facingRight && hitLeft)) && crouching && Mathf.Abs(floorAngle) >= slopeSlidingAngle && !inShell && state != Enums.PowerupState.MegaMushroom) {
@@ -2544,6 +2600,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
             Utils.TickTimer(ref giantTimer, 0, delta);
         Utils.TickTimer(ref giantStartTimer, 0, delta);
         Utils.TickTimer(ref groundpoundCounter, 0, delta);
+        Utils.TickTimer(ref groundpoundCounterStart, 0, -delta);
         Utils.TickTimer(ref giantEndTimer, 0, delta);
         Utils.TickTimer(ref groundpoundDelay, 0, delta);
         Utils.TickTimer(ref hitInvincibilityCounter, 0, delta);
@@ -2918,6 +2975,12 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
 
         HandleSlopes();
 
+        if (!alreadyGroundpounded && !firstGP && !nowCountingStartGP)
+        {
+            groundpoundCounterStart = 0;
+            nowCountingStartGP = true;
+        }
+
         if (crouch && !alreadyGroundpounded) {
             HandleGroundpoundStart(left, right);
         } else {
@@ -3128,6 +3191,20 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
             groundpoundCounter = groundpoundTime * (state == Enums.PowerupState.MegaMushroom ? 1.5f : 1);
             photonView.RPC(nameof(PlaySound), RpcTarget.All, Enums.Sounds.Player_Sound_GroundpoundStart);
             alreadyGroundpounded = true;
+
+            string text = "None";
+            if (groundpoundCounterStart <= 0.125f)
+                text = "Best";
+            else if (groundpoundCounterStart <= 0.15f)
+                text = "Good";
+            else if (groundpoundCounterStart <= 0.75f)
+            {
+                text = "Late";
+                gpStartFailedCount["late"] += 1;
+            }
+            gpStartTimingStateStr = text;
+
+            firstGP = false;
             //groundpoundDelay = 0.75f;
         }
     }

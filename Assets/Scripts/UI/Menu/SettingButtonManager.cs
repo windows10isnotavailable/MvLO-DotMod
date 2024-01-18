@@ -51,6 +51,11 @@ public class SettingButtonManager : MonoBehaviour {
         Settings.hidePlayerInRaceLevel = toggle.isOn;
         Settings.SaveSettingsToPreferences();
     }
+    public void OnPracticeMode(Toggle toggle)
+    {
+        Settings.practiceModeGP = toggle.isOn;
+        Settings.SaveSettingsToPreferences();
+    }
 
     public void OnFullscreenToggle(Toggle toggle) {
         bool value = toggle.isOn;

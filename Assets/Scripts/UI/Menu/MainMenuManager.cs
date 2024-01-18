@@ -30,7 +30,7 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
     public TMP_Dropdown levelDropdown, characterDropdown, initPowerupsDropdown;
     public RoomIcon selectedRoomIcon, privateJoinRoom;
     public Button joinRoomBtn, createRoomBtn, startGameBtn;
-    public Toggle ndsResolutionToggle, fullscreenToggle, livesEnabled, powerupsEnabled, iceRunModeEnabled, scoreModeEnabled, friendlyFireEnabled, timeEnabled, drawTimeupToggle, fireballToggle, vsyncToggle, privateToggle, privateToggleRoom, aspectToggle, spectateToggle, scoreboardToggle, filterToggle, hidePlayerInRaceLevelToggle;
+    public Toggle ndsResolutionToggle, fullscreenToggle, livesEnabled, powerupsEnabled, iceRunModeEnabled, scoreModeEnabled, friendlyFireEnabled, timeEnabled, drawTimeupToggle, fireballToggle, vsyncToggle, privateToggle, privateToggleRoom, aspectToggle, spectateToggle, scoreboardToggle, filterToggle, hidePlayerInRaceLevelToggle, practiceModeToggle;
     public GameObject playersContent, playersPrefab, chatContent, chatPrefab, mapButtonPrefab, versusContent, battleContent, raceContent;
     public TMP_InputField nicknameField, starsText, coinsText, livesField, timeField, scoresField, lobbyJoinField, chatTextField;
     public Slider musicSlider, sfxSlider, masterSlider, lobbyPlayersSlider, changePlayersSlider;
@@ -43,6 +43,11 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
     public string connectThroughSecret = "";
     public string selectedRoom;
     public bool askedToJoin;
+
+    private bool mapHideModeFlag = false;
+
+    private List<GameObject> selectMapBoxButtonList = new();
+    public GameObject selectMapBoxHeader, hidemapButton;
 
     public GameObject mapSelectButton, selectMapBoxCancelButton;
 
@@ -414,6 +419,30 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         PhotonNetwork.RemoveCallbackTarget(this);
     }
 
+    private void ToggleHideMap(int index)
+    {
+        if (Settings.Instance.hideMaps.Contains(index))
+        {
+            Settings.Instance.hideMaps.Remove(index);
+        }
+        else
+        {
+            Settings.Instance.hideMaps.Add(index);
+        }
+        selectMapBoxButtonList[index].GetComponent<Image>().color = Settings.Instance.hideMaps.Contains(index) ? IceRunModeUtils.HideButtonColor : Color.white;
+    }
+
+    private void _SetLevelIndex(int index)
+    {
+        if (mapHideModeFlag)
+        {
+            ToggleHideMap(index);
+        } else
+        {
+            SetLevelIndex(index);
+        }
+    }
+
     // Unity Stuff
     public void Start() {
 
@@ -446,7 +475,7 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
 
             GameObject button = Instantiate(mapButtonPrefab, Vector3.zero, Quaternion.identity);
             button.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = map;
-            button.GetComponent<Button>().onClick.AddListener(() => SetLevelIndex(index));
+            button.GetComponent<Button>().onClick.AddListener(() => _SetLevelIndex(index));
             button.SetActive(true);
 
             var content = versusContent;
@@ -455,6 +484,8 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
             else if(map.Contains("[R]")) content = raceContent;
 
             button.transform.SetParent(content.transform, false);
+
+            selectMapBoxButtonList.Add(button);
         }
 
         if (maps.Count > 0)
@@ -556,6 +587,7 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         scoreboardToggle.isOn = Settings.Instance.scoreboardAlways;
         filterToggle.isOn = Settings.Instance.filter;
         hidePlayerInRaceLevelToggle.isOn = Settings.Instance.hidePlayerInRaceLevel;
+        practiceModeToggle.isOn = Settings.Instance.practiceModeGP;
         QualitySettings.vSyncCount = Settings.Instance.vsync ? 1 : 0;
     }
 
@@ -771,8 +803,24 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
 
         EventSystem.current.SetSelectedGameObject(currentLobbySelected);
     }
+    private void RedrawSelectMapBox()
+    {
+        selectMapBoxHeader.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = mapHideModeFlag ? "Choose a map you want to hide" : "Choose a map";
+        hidemapButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = mapHideModeFlag ? "Choose a map" : "Hide a map";
+
+        for (int i = 0; i < selectMapBoxButtonList.Count; i++)
+        {
+            GameObject button = selectMapBoxButtonList[i];
+            if (Settings.Instance.hideMaps.Contains(i))
+                button.SetActive(mapHideModeFlag);
+            button.GetComponent<Image>().color = mapHideModeFlag && Settings.Instance.hideMaps.Contains(i) ? IceRunModeUtils.HideButtonColor : Color.white;
+        }
+    }
     public void OpenSelectMapBox()
     {
+        mapHideModeFlag = false;
+        RedrawSelectMapBox();
+
         selectMapBox.SetActive(true);
 
         EventSystem.current.SetSelectedGameObject(selectMapBoxCancelButton);
@@ -782,7 +830,18 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         selectMapBox.SetActive(false);
 
         EventSystem.current.SetSelectedGameObject(mapSelectButton);
+
+        Settings.Instance.SaveSettingsToPreferences();
     }
+    public void OnClickHideMapButton()
+    {
+        mapHideModeFlag = !mapHideModeFlag;
+
+        RedrawSelectMapBox();
+
+        Settings.Instance.SaveSettingsToPreferences();
+    }
+
     public void OpenPrivatePrompt() {
         privatePrompt.SetActive(true);
         lobbyJoinField.text = "";

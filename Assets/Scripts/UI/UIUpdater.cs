@@ -13,12 +13,12 @@ public class UIUpdater : MonoBehaviour {
     public GameObject playerTrackTemplate, starTrackTemplate;
     public PlayerController player;
     public Sprite storedItemNull;
-    public TMP_Text uiScores, uiStars, uiCoins, uiDebug, uiLives, uiCountdown;
+    public TMP_Text uiScores, uiStars, uiCoins, uiDebug, uiLives, uiCountdown, uiPractice;
     public Image itemReserve, itemColor;
     public float pingSample = 0;
 
     private Material timerMaterial;
-    private GameObject scoresParent, starsParent, coinsParent, livesParent, timerParent;
+    private GameObject scoresParent, starsParent, coinsParent, livesParent, timerParent, practiceParent;
     private readonly List<Image> backgrounds = new();
     private bool uiHidden;
 
@@ -33,6 +33,7 @@ public class UIUpdater : MonoBehaviour {
         coinsParent = uiCoins.transform.parent.gameObject;
         livesParent = uiLives.transform.parent.gameObject;
         timerParent = uiCountdown.transform.parent.gameObject;
+        practiceParent = uiPractice.transform.parent.gameObject;
 
         backgrounds.Add(scoresParent.GetComponentInChildren<Image>());
         backgrounds.Add(starsParent.GetComponentInChildren<Image>());
@@ -78,6 +79,7 @@ public class UIUpdater : MonoBehaviour {
         livesParent.SetActive(!hidden);
         coinsParent.SetActive(!hidden);
         timerParent.SetActive(!hidden);
+        practiceParent.SetActive(!hidden);
     }
 
     private void UpdateStoredItemUI() {
@@ -147,6 +149,17 @@ public class UIUpdater : MonoBehaviour {
         } else {
             timerParent.SetActive(false);
         }
+
+        if (Settings.Instance.practiceModeGP)
+        {
+            uiPractice.text  = "GP Counter: " + player.gpCounter + "\n";
+            uiPractice.text += "GP Start Timing:  " + player.gpStartTimingStateStr + "\n";
+            uiPractice.text += "GP Cancel Timing: " + player.gpCancelTimingStateStr + "\n";
+            uiPractice.text += "Early Count: (Cancel=" + player.gpCancelFailedCount["early"] + ")\n";
+            uiPractice.text += "Late Count:  (Cancel=" + player.gpCancelFailedCount["late"] + ", Start=" + player.gpStartFailedCount["late"] + ")";
+        }
+
+        practiceParent.SetActive(player.photonView != null && !NetworkUtils.IsSpectator(player.photonView.Owner) && player.photonView.IsMine && Settings.Instance.practiceModeGP);
     }
 
     public GameObject CreatePlayerIcon(PlayerController player) {
