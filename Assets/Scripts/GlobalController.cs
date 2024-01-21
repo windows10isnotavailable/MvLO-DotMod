@@ -43,9 +43,16 @@ public class GlobalController : Singleton<GlobalController>, IInRoomCallbacks, I
         gameState = GetComponent<GameState>();
         DiscordController = GetComponent<DiscordController>();
 
+
         PhotonNetwork.AddCallbackTarget(this);
+
+        LoadCustomAudio();
     }
 
+
+    public void LoadCustomAudio()
+    {
+    }
 
     [Obsolete]
     public void Start() {

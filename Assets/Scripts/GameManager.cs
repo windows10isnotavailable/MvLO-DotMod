@@ -1015,7 +1015,10 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
         }
 
         Gizmos.color = new Color(1, 0.9f, 0.2f, 0.2f);
-        foreach (GameObject starSpawn in GameObject.FindGameObjectsWithTag("StarSpawn")) {
+        UnityEditor.Handles.color = new Color(1, 0, 0, 0.5f);
+        foreach (GameObject starSpawn in GameObject.FindGameObjectsWithTag("StarSpawn"))
+        {
+            UnityEditor.Handles.DrawWireDisc(starSpawn.transform.position, Vector3.back, 4);
             Gizmos.DrawCube(starSpawn.transform.position, Vector3.one);
             Gizmos.DrawIcon(starSpawn.transform.position, "star", true, new Color(1, 1, 1, 0.5f));
         }
