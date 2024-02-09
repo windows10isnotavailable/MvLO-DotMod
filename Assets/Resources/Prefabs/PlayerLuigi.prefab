@@ -21420,11 +21420,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 984b6c8bdb2dc4a419d0cd6be4254d4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gpCancelTimingStateStr: None
+  gpStartTimingStateStr: None
+  gpCounter: 0
   playerId: -1
   dead: 0
   spawned: 0
   state: 0
   previousState: 0
+  initPowerups: 2
   slowriseGravity: 1.05
   normalGravity: 3.25
   flyingGravity: 0.8
@@ -21494,6 +21498,7 @@ MonoBehaviour:
   landing: 0
   koyoteTime: 0
   groundpoundCounter: 0
+  groundpoundCounterStart: 0
   groundpoundStartTimer: 0
   pickupTimer: 0
   groundpoundDelay: 0
@@ -21512,12 +21517,22 @@ MonoBehaviour:
   knockbackTimer: 0
   pipeTimer: 0
   slowdownTimer: 0
+  scoreTimer: 0
   wallSlideLeft: 0
   wallSlideRight: 0
   pipeDirection: {x: 0, y: 0}
   stars: 0
   coins: 0
   lives: -1
+  initLives: -1
+  numOfLivePlayers: 1000
+  scores: 0
+  previousScores: 0
+  scoreRequirement: -1
+  isCancelPlayerCollision: 0
+  isIceRunMode: 0
+  isEnabledFriendlyFire: 1
+  isRunner: 0
   storedPowerup: {fileID: 0}
   holding: {fileID: 0}
   holdingOld: {fileID: 0}
