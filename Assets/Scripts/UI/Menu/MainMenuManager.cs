@@ -813,6 +813,8 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
             GameObject button = selectMapBoxButtonList[i];
             if (Settings.Instance.hideMaps.Contains(i))
                 button.SetActive(mapHideModeFlag);
+            if (levelDropdown.options[i].text.Equals("[R] DotDream") && !GameState.Instance.IsClear("KeepTheMushroom")) // bad
+                button.SetActive(false);
             button.GetComponent<Image>().color = mapHideModeFlag && Settings.Instance.hideMaps.Contains(i) ? IceRunModeUtils.HideButtonColor : Color.white;
         }
     }

@@ -1015,13 +1015,17 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
         }
 
         Gizmos.color = new Color(1, 0.9f, 0.2f, 0.2f);
+#if UNITY_EDITOR
         UnityEditor.Handles.color = new Color(1, 0, 0, 0.5f);
+#endif
         foreach (GameObject starSpawn in GameObject.FindGameObjectsWithTag("StarSpawn"))
         {
+#if UNITY_EDITOR
             UnityEditor.Handles.DrawWireDisc(starSpawn.transform.position, Vector3.back, 4);
+#endif
             Gizmos.DrawCube(starSpawn.transform.position, Vector3.one);
             Gizmos.DrawIcon(starSpawn.transform.position, "star", true, new Color(1, 1, 1, 0.5f));
         }
-    }
+        }
 
-}
+    }
