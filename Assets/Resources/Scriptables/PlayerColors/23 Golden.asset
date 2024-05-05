@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   colors:
   - player: {fileID: 0}
-    hatColor: {r: 0.9656919, g: 1, b: 0.06132078, a: 1}
-    overallsColor: {r: 0.44118735, g: 0.5188679, b: 0, a: 1}
+    hatColor: {r: 1, g: 1, b: 0, a: 1}
+    overallsColor: {r: 1, g: 0.37736028, b: 0, a: 1}
   ShowClearStageKeyName: DotDream
   IsHiddenColor: 1

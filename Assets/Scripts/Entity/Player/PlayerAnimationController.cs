@@ -11,6 +11,7 @@ public class PlayerAnimationController : MonoBehaviourPun {
     [SerializeField] private GameObject models, smallModel, largeModel, largeShellExclude, blueShell, propellerHelmet, propeller;
     [SerializeField] private Material glowMaterial;
     [SerializeField] private Color primaryColor = Color.clear, secondaryColor = Color.clear;
+    [SerializeField] private bool IsGolden;
     [SerializeField] [ColorUsage(true, false)] private Color? _glowColor = null;
     [SerializeField] private float blinkDuration = 0.1f, pipeDuration = 2f, deathUpTime = 0.6f, deathForce = 7f;
 
@@ -67,6 +68,8 @@ public class PlayerAnimationController : MonoBehaviourPun {
 
             primaryColorAtStart = primaryColor;
             secondaryColorAtStart = secondaryColor;
+
+            IsGolden = colorSet.ShowClearStageKeyName.Equals("DotDream");
         }
     }
 
@@ -275,6 +278,8 @@ public class PlayerAnimationController : MonoBehaviourPun {
             materialBlock = new();
 
         materialBlock.SetFloat("RainbowEnabled", controller.invincible > 0 ? 1.1f : 0f);
+        materialBlock.SetFloat("GoldenEnabled", IsGolden ? 10f : 0f);
+
         int ps = controller.state switch {
             Enums.PowerupState.FireFlower => 1,
             Enums.PowerupState.PropellerMushroom => 2,

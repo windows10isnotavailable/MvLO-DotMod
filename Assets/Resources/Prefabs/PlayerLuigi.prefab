@@ -21576,6 +21576,7 @@ MonoBehaviour:
   glowMaterial: {fileID: 0}
   primaryColor: {r: 0, g: 0, b: 0, a: 0}
   secondaryColor: {r: 0, g: 0, b: 0, a: 0}
+  IsGolden: 0
   blinkDuration: 0.1
   pipeDuration: 2
   deathUpTime: 0.6

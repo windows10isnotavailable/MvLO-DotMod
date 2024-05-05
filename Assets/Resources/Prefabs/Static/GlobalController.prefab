@@ -254,6 +254,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 245cea6ccab8e0d47a215ef6df104e09, type: 2}
   - {fileID: 11400000, guid: 2ea8c39849fd3704cb659e2d4ef905c3, type: 2}
   - {fileID: 11400000, guid: 5e43e59d43335b54dbb9c357d1364409, type: 2}
+  - {fileID: 11400000, guid: fd5641df66869ec4e82111170d260c35, type: 2}
   rainbowGradient:
     serializedVersion: 2
     key0: {r: 1, g: 0.13913044, b: 0.11304349, a: 1}
@@ -292,6 +293,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8e33573d2c2ae7c4682fc6cdb5ea28cd, type: 2}
   - {fileID: 11400000, guid: 083779ae7bd92ab4295d580d757b328e, type: 2}
   settings: {fileID: 0}
+  gameState: {fileID: 0}
   controlsJson: 
   joinedAsSpectator: 0
   checkedForVersion: 0
@@ -317,6 +319,8 @@ MonoBehaviour:
   fourByThreeRatio: 0
   scoreboardAlways: 0
   filter: 1
+  hidePlayerInRaceLevel: 0
+  practiceModeGP: 0
 --- !u!114 &-4995846899032889076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -329,7 +333,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06417f387fcba2745ae4feb06d9ad75c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsClearKeepTheMushroom: 0
 --- !u!82 &1776850482587567145
 AudioSource:
   m_ObjectHideFlags: 0

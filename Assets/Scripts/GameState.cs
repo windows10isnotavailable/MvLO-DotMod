@@ -19,6 +19,7 @@ public class GameState : Singleton<GameState>
         IsClearStages = new()
         {
             ["KeepTheMushroom"] = false,
+            ["DotDream"] = false,
         };
 
         LoadGameStateFromPreferences();
@@ -27,10 +28,12 @@ public class GameState : Singleton<GameState>
     public void LoadGameStateFromPreferences()
     {
         IsClearStages["KeepTheMushroom"] = PlayerPrefs.GetInt("DotMod-GS-IsClearKeepTheMushroom", 0) == 1;
+        IsClearStages["DotDream"] = PlayerPrefs.GetInt("DotMod-GS-IsClearDotDream", 0) == 1;
     }
     public void SaveGameStateToPreferences()
     {
         PlayerPrefs.SetInt("DotMod-GS-IsClearKeepTheMushroom", IsClearStages["KeepTheMushroom"] ? 1 : 0);
+        PlayerPrefs.SetInt("DotMod-GS-IsClearDotDream", IsClearStages["DotDream"] ? 1 : 0);
         PlayerPrefs.Save();
     }
 
